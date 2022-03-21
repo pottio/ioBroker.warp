@@ -1,0 +1,103 @@
+{
+	"common": {
+		"name": "warp",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"zh-cn": "首次出版"
+			}
+		},
+		"title": "WARP charger",
+		"titleLang": {
+			"en": "WARP charger",
+			"de": "WARP-Ladegerät",
+			"ru": "ВАРП зарядное устройство",
+			"pt": "Carregador WARP",
+			"nl": "WARP-oplader",
+			"fr": "Chargeur WARP",
+			"it": "Caricatore WARP",
+			"es": "cargador WARP",
+			"pl": "Ładowarka WARP",
+			"zh-cn": "WARP充电器"
+		},
+		"desc": {
+			"en": "Monitors and controls a wallbox (WARP charger) by Tinkerforge",
+			"de": "Überwacht und steuert eine Wallbox (WARP-Ladegerät) von Tinkerforge",
+			"ru": "Отслеживает и контролирует настенную коробку (зарядное устройство WARP) от Tinkerforge.",
+			"pt": "Monitora e controla uma caixa de parede (carregador WARP) da Tinkerforge",
+			"nl": "Bewaakt en bestuurt een wallbox (WARP-oplader) van Tinkerforge",
+			"fr": "Surveille et contrôle une wallbox (chargeur WARP) par Tinkerforge",
+			"it": "Monitora e controlla una wallbox (caricatore WARP) di Tinkerforge",
+			"es": "Supervisa y controla un wallbox (cargador WARP) de Tinkerforge",
+			"pl": "Monitoruje i steruje wallboxem (ładowarką WARP) firmy Tinkerforge",
+			"zh-cn": "监视和控制 Tinkerforge 的墙盒（WARP 充电器）"
+		},
+		"authors": [
+			"pottio <pottio.dev@gmail.com>"
+		],
+		"keywords": [
+			"warp",
+			"charger",
+			"car",
+			"wallbox",
+			"e-mobility",
+			"tinkerforge"
+		],
+		"license": "MIT",
+		"platform": "Javascript/Node.js",
+		"main": "build/main.js",
+		"icon": "warp.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/pottio/ioBroker.warp/main/admin/warp.png",
+		"readme": "https://github.com/pottio/ioBroker.warp/blob/main/README.md",
+		"loglevel": "info",
+		"mode": "daemon",
+		"type": "vehicle",
+		"compact": true,
+		"connectionType": "local",
+		"dataSource": "push",
+		"materialize": true,
+		"dependencies": [
+			{
+				"js-controller": ">=2.0.0"
+			}
+		]
+	},
+	"native": {
+		"option1": true,
+		"option2": "42"
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}
