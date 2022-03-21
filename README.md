@@ -32,7 +32,7 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 	### **WORK IN PROGRESS**
 -->
 
-### **WORK IN PROGRESS**
+### 0.0.2 (2022-03-21)
 * (pottio) initial release
 
 ## License
