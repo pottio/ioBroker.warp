@@ -1,5 +1,15 @@
 {
-	"warp adapter settings": "warp的适配器设置",
-	"option1": "选项1",
-	"option2": "选项2"
+    "authEnabled": "启用身份验证",
+    "ip": "IP地址",
+    "ipNotConfigured": "未配置 IP 地址",
+    "manufacturerHref": "制造商产品信息",
+    "model": "模型",
+    "modelNotConfigured": "模型未配置",
+    "password": "密码",
+    "product": "产品",
+    "productNotConfigured": "产品未配置",
+    "secureConnection": "安全连接",
+    "secureConnectionNotSupported": "WARP 充电器尚不支持安全连接",
+    "user": "用户名",
+    "userAndPasswordNotConfigured": "未配置用户名或密码"
 }

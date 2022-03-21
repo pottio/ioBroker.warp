@@ -21,6 +21,10 @@ var __spreadValues = (a, b) => {
   return a;
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -30,58 +34,62 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target, mod));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var main_exports = {};
+__export(main_exports, {
+  WarpAdapter: () => WarpAdapter
+});
+module.exports = __toCommonJS(main_exports);
 var utils = __toESM(require("@iobroker/adapter-core"));
-class Warp extends utils.Adapter {
+var import_context_logger = require("./lib/context-logger");
+var import_warp_service = require("./warp/warp-service");
+class WarpAdapter extends utils.Adapter {
   constructor(options = {}) {
     super(__spreadProps(__spreadValues({}, options), {
       name: "warp"
     }));
-    this.on("ready", this.onReady.bind(this));
-    this.on("stateChange", this.onStateChange.bind(this));
-    this.on("unload", this.onUnload.bind(this));
+    this._log = new import_context_logger.ContextLogger(this, "Main");
+    this._warpService = new import_warp_service.WarpService(this);
+    this.on("ready", this.onReadyAsync.bind(this));
+    this.on("stateChange", this.onStateChangeAsync.bind(this));
+    this.on("unload", this.onUnloadAsync.bind(this));
   }
-  async onReady() {
+  async onReadyAsync() {
+    var _a;
+    this._log.info("Start initializing WARP adapter");
     this.setState("info.connection", false, true);
-    this.log.info("config option1: " + this.config.option1);
-    this.log.info("config option2: " + this.config.option2);
-    await this.setObjectNotExistsAsync("testVariable", {
-      type: "state",
-      common: {
-        name: "testVariable",
-        type: "boolean",
-        role: "indicator",
-        read: true,
-        write: true
-      },
-      native: {}
-    });
-    this.subscribeStates("testVariable");
-    await this.setStateAsync("testVariable", true);
-    await this.setStateAsync("testVariable", { val: true, ack: true });
-    await this.setStateAsync("testVariable", { val: true, ack: true, expire: 30 });
-    let result = await this.checkPasswordAsync("admin", "iobroker");
-    this.log.info("check user admin pw iobroker: " + result);
-    result = await this.checkGroupAsync("admin", "admin");
-    this.log.info("check group user admin group admin: " + result);
+    const product = await this.getStateAsync("info.product");
+    const model = await this.getStateAsync("info.model");
+    const version = await this.getStateAsync("info.version");
+    const configurationChanged = this.config.product !== (product == null ? void 0 : product.val) || this.config.model !== (model == null ? void 0 : model.val);
+    await this._warpService.initAsync(configurationChanged, (_a = version == null ? void 0 : version.val) != null ? _a : "0.0.0");
+    await this.setStateAsync("info.product", this.config.product, true);
+    await this.setStateAsync("info.model", this.config.model, true);
+    await this.setStateAsync("info.version", this.version, true);
+    this._log.info("WARP adapter initialized");
   }
-  onUnload(callback) {
+  async onUnloadAsync(callback) {
     try {
+      this._log.info("Shutting down WARP adapter");
+      await this._warpService.terminateAsync();
       callback();
     } catch (e) {
       callback();
     }
   }
-  onStateChange(id, state) {
+  async onStateChangeAsync(id, state) {
     if (state) {
-      this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-    } else {
-      this.log.info(`state ${id} deleted`);
+      this._warpService.handleStateChangedAsync(id, state);
     }
   }
 }
 if (require.main !== module) {
-  module.exports = (options) => new Warp(options);
+  module.exports = (options) => new WarpAdapter(options);
 } else {
-  (() => new Warp())();
+  (() => new WarpAdapter())();
 }
+// Annotate the CommonJS export names for ESM import in node:
+0 && (module.exports = {
+  WarpAdapter
+});
 //# sourceMappingURL=main.js.map

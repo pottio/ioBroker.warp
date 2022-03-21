@@ -4,11 +4,16 @@
 declare global {
 	namespace ioBroker {
 		interface AdapterConfig {
-			option1: boolean;
-			option2: string;
+			authEnabled: boolean,
+			ip: string,
+			model: string,
+			password: string,
+			product: string,
+			secureConnection: boolean,
+			user: string
 		}
 	}
 }
 
 // this is required so the above AdapterConfig is found by TypeScript / type checking
-export {};
+export { };
