@@ -8,40 +8,17 @@
 'use strict';
 
 systemDictionary = {
-	'warp adapter settings': {
-		'en': 'Adapter settings for warp',
-		'de': 'Adaptereinstellungen für warp',
-		'ru': 'Настройки адаптера для warp',
-		'pt': 'Configurações do adaptador para warp',
-		'nl': 'Adapterinstellingen voor warp',
-		'fr': "Paramètres d'adaptateur pour warp",
-		'it': "Impostazioni dell'adattatore per warp",
-		'es': 'Ajustes del adaptador para warp',
-		'pl': 'Ustawienia adaptera dla warp',
-		'zh-cn': 'warp的适配器设置'
-	},
-	'option1': {
-		'en': 'option1',
-		'de': 'Option 1',
-		'ru': 'Опция 1',
-		'pt': 'Opção 1',
-		'nl': 'Optie 1',
-		'fr': 'Option 1',
-		'it': 'opzione 1',
-		'es': 'Opción 1',
-		'pl': 'opcja 1',
-		'zh-cn': '选项1'
-	},
-	'option2': {
-		'en': 'option2',
-		'de': 'Option 2',
-		'ru': 'вариант 2',
-		'pt': 'opção 2',
-		'nl': 'Optie 2',
-		'fr': 'Option 2',
-		'it': 'opzione 2',
-		'es': 'opcion 2',
-		'pl': 'Opcja 2',
-		'zh-cn': '选项2'
-	}
+    "authEnabled": {                                 "en": "Authentication enabled",                          "de": "Authentifizierung aktiviert",                     "ru": "Аутентификация включена",                         "pt": "Autenticação ativada",                            "nl": "Verificatie ingeschakeld",                        "fr": "Authentification activée",                        "it": "Autenticazione abilitata",                        "es": "Autenticación habilitada",                        "pl": "Uwierzytelnianie włączone",                       "zh-cn": "启用身份验证"},
+    "ip": {                                          "en": "IP address",                                      "de": "IP Adresse",                                      "ru": "айпи адрес",                                      "pt": "endereço de IP",                                  "nl": "IP adres",                                        "fr": "adresse IP",                                      "it": "indirizzo IP",                                    "es": "dirección IP",                                    "pl": "adres IP",                                        "zh-cn": "IP地址"},
+    "ipNotConfigured": {                             "en": "IP address is not configured",                    "de": "IP-Adresse ist nicht konfiguriert",               "ru": "IP-адрес не настроен",                            "pt": "O endereço IP não está configurado",              "nl": "IP-adres is niet geconfigureerd",                 "fr": "L'adresse IP n'est pas configurée",               "it": "L'indirizzo IP non è configurato",                "es": "La dirección IP no está configurada",             "pl": "Adres IP nie jest skonfigurowany",                "zh-cn": "未配置 IP 地址"},
+    "manufacturerHref": {                            "en": "Manufacturer product information",                "de": "Produktinformationen des Herstellers",            "ru": "Информация о продукте производителя",             "pt": "Informações sobre o produto do fabricante",       "nl": "Productinformatie fabrikant:",                    "fr": "Informations sur le produit du fabricant",        "it": "Informazioni sul prodotto del produttore",        "es": "Información del producto del fabricante",         "pl": "Informacje o produkcie producenta",               "zh-cn": "制造商产品信息"},
+    "model": {                                       "en": "Model",                                           "de": "Modell",                                          "ru": "Модель",                                          "pt": "Modelo",                                          "nl": "Model",                                           "fr": "Modèle",                                          "it": "Modello",                                         "es": "Modelo",                                          "pl": "Model",                                           "zh-cn": "模型"},
+    "modelNotConfigured": {                          "en": "Model is not configured",                         "de": "Modell ist nicht konfiguriert",                   "ru": "Модель не настроена",                             "pt": "O modelo não está configurado",                   "nl": "Model is niet geconfigureerd",                    "fr": "Le modèle n'est pas configuré",                   "it": "Il modello non è configurato",                    "es": "El modelo no está configurado",                   "pl": "Model nie jest skonfigurowany",                   "zh-cn": "模型未配置"},
+    "password": {                                    "en": "Password",                                        "de": "Passwort",                                        "ru": "Пароль",                                          "pt": "Senha",                                           "nl": "Wachtwoord",                                      "fr": "Mot de passe",                                    "it": "Parola d'ordine",                                 "es": "Contraseña",                                      "pl": "Hasło",                                           "zh-cn": "密码"},
+    "product": {                                     "en": "Product",                                         "de": "Produkt",                                         "ru": "Продукт",                                         "pt": "produtos",                                        "nl": "Product",                                         "fr": "Produit",                                         "it": "Prodotto",                                        "es": "Producto",                                        "pl": "Produkt",                                         "zh-cn": "产品"},
+    "productNotConfigured": {                        "en": "Product is not configured",                       "de": "Produkt ist nicht konfiguriert",                  "ru": "Продукт не настроен",                             "pt": "O produto não está configurado",                  "nl": "Product is niet geconfigureerd",                  "fr": "Le produit n'est pas configuré",                  "it": "Il prodotto non è configurato",                   "es": "El producto no está configurado",                 "pl": "Produkt nie jest skonfigurowany",                 "zh-cn": "产品未配置"},
+    "secureConnection": {                            "en": "Secure connection",                               "de": "Sichere Verbindung",                              "ru": "Безопасное соединение",                           "pt": "Conexão segura",                                  "nl": "Beveiligde verbinding",                           "fr": "Connexion sécurisée",                             "it": "Connessione sicura",                              "es": "Conexión segura",                                 "pl": "Połączenie chronione",                            "zh-cn": "安全连接"},
+    "secureConnectionNotSupported": {                "en": "Secure connections are not yet supported by WARP chargers", "de": "Sichere Verbindungen werden von WARP-Ladegeräten noch nicht unterstützt", "ru": "Безопасные соединения пока не поддерживаются зарядными устройствами WARP.", "pt": "Conexões seguras ainda não são suportadas por carregadores WARP", "nl": "Beveiligde verbindingen worden nog niet ondersteund door WARP-opladers", "fr": "Les connexions sécurisées ne sont pas encore prises en charge par les chargeurs WARP", "it": "Le connessioni sicure non sono ancora supportate dai caricabatterie WARP", "es": "Las conexiones seguras aún no son compatibles con los cargadores WARP", "pl": "Bezpieczne połączenia nie są jeszcze obsługiwane przez ładowarki WARP", "zh-cn": "WARP 充电器尚不支持安全连接"},
+    "user": {                                        "en": "Username",                                        "de": "Nutzername",                                      "ru": "Имя пользователя",                                "pt": "Nome do usuário",                                 "nl": "gebruikersnaam",                                  "fr": "Nom d'utilisateur",                               "it": "Nome utente",                                     "es": "Nombre de usuario",                               "pl": "Nazwa użytkownika",                               "zh-cn": "用户名"},
+    "userAndPasswordNotConfigured": {                "en": "Username or password are not configured",         "de": "Benutzername oder Passwort sind nicht konfiguriert", "ru": "Имя пользователя или пароль не настроены",        "pt": "O nome de usuário ou a senha não estão configurados", "nl": "Gebruikersnaam of wachtwoord zijn niet geconfigureerd", "fr": "Le nom d'utilisateur ou le mot de passe ne sont pas configurés", "it": "Il nome utente o la password non sono configurati", "es": "El nombre de usuario o la contraseña no están configurados", "pl": "Nazwa użytkownika lub hasło nie są skonfigurowane", "zh-cn": "未配置用户名或密码"}
 };

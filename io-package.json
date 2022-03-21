@@ -19,30 +19,30 @@
 		"title": "WARP charger",
 		"titleLang": {
 			"en": "WARP charger",
-			"de": "WARP-Ladegerät",
-			"ru": "ВАРП зарядное устройство",
-			"pt": "Carregador WARP",
-			"nl": "WARP-oplader",
-			"fr": "Chargeur WARP",
-			"it": "Caricatore WARP",
-			"es": "cargador WARP",
-			"pl": "Ładowarka WARP",
-			"zh-cn": "WARP充电器"
+			"de": "WARP charger",
+			"ru": "WARP charger",
+			"pt": "WARP charger",
+			"nl": "WARP charger",
+			"fr": "WARP charger",
+			"it": "WARP charger",
+			"es": "WARP charger",
+			"pl": "WARP charger",
+			"zh-cn": "WARP charger"
 		},
 		"desc": {
 			"en": "Monitors and controls a wallbox (WARP charger) by Tinkerforge",
-			"de": "Überwacht und steuert eine Wallbox (WARP-Ladegerät) von Tinkerforge",
-			"ru": "Отслеживает и контролирует настенную коробку (зарядное устройство WARP) от Tinkerforge.",
-			"pt": "Monitora e controla uma caixa de parede (carregador WARP) da Tinkerforge",
-			"nl": "Bewaakt en bestuurt een wallbox (WARP-oplader) van Tinkerforge",
-			"fr": "Surveille et contrôle une wallbox (chargeur WARP) par Tinkerforge",
-			"it": "Monitora e controlla una wallbox (caricatore WARP) di Tinkerforge",
-			"es": "Supervisa y controla un wallbox (cargador WARP) de Tinkerforge",
-			"pl": "Monitoruje i steruje wallboxem (ładowarką WARP) firmy Tinkerforge",
-			"zh-cn": "监视和控制 Tinkerforge 的墙盒（WARP 充电器）"
+			"de": "Überwacht und steuert eine Wallbox (WARP charger) von Tinkerforge",
+			"ru": "Отслеживает и контролирует настенную коробку (WARP charger) от Tinkerforge.",
+			"pt": "Monitora e controla uma caixa de parede (WARP charger) da Tinkerforge",
+			"nl": "Bewaakt en bestuurt een wallbox (WARP charger) van Tinkerforge",
+			"fr": "Surveille et contrôle une wallbox (WARP charger) par Tinkerforge",
+			"it": "Monitora e controlla una wallbox (WARP charger) di Tinkerforge",
+			"es": "Supervisa y controla un wallbox (WARP charger) de Tinkerforge",
+			"pl": "Monitoruje i steruje wallboxem (WARP charger) firmy Tinkerforge",
+			"zh-cn": "监视和控制 Tinkerforge 的墙盒（WARP charger）"
 		},
 		"authors": [
-			"pottio <pottio.dev@gmail.com>"
+			"pottio"
 		],
 		"keywords": [
 			"warp",
@@ -73,8 +73,13 @@
 		]
 	},
 	"native": {
-		"option1": true,
-		"option2": "42"
+		"authEnabled": false,
+        "ip": "",
+        "model": "",
+        "password": "",
+        "product": "",
+        "secureConnection": false,
+        "user": ""
 	},
 	"objects": [],
 	"instanceObjects": [
@@ -91,11 +96,50 @@
 			"type": "state",
 			"common": {
 				"role": "indicator.connected",
-				"name": "Device or service connected",
+				"name": "WARP charger connected",
 				"type": "boolean",
 				"read": true,
 				"write": false,
 				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.product",
+			"type": "config",
+			"common": {
+				"role": "text",
+				"name": "Configured product on last adapter execution (needed to generate objects on adapter start)",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.model",
+			"type": "config",
+			"common": {
+				"role": "text",
+				"name": "Configured model on last adapter execution (needed to generate objects on adapter start)",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.version",
+			"type": "config",
+			"common": {
+				"role": "text",
+				"name": "Adapter version on last adapter execution (needed to generate objects on adapter start)",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
 			},
 			"native": {}
 		}

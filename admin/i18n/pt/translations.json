@@ -1,5 +1,15 @@
 {
-	"warp adapter settings": "Configurações do adaptador para warp",
-	"option1": "Opção 1",
-	"option2": "opção 2"
+    "authEnabled": "Autenticação ativada",
+    "ip": "endereço de IP",
+    "ipNotConfigured": "O endereço IP não está configurado",
+    "manufacturerHref": "Informações sobre o produto do fabricante",
+    "model": "Modelo",
+    "modelNotConfigured": "O modelo não está configurado",
+    "password": "Senha",
+    "product": "produtos",
+    "productNotConfigured": "O produto não está configurado",
+    "secureConnection": "Conexão segura",
+    "secureConnectionNotSupported": "Conexões seguras ainda não são suportadas por carregadores WARP",
+    "user": "Nome do usuário",
+    "userAndPasswordNotConfigured": "O nome de usuário ou a senha não estão configurados"
 }

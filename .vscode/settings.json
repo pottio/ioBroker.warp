@@ -1,6 +1,7 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"eslint.enable": true,
+	"editor.formatOnSave": true,
 	"json.schemas": [
 		{
 			"fileMatch": [
@@ -8,5 +9,21 @@
 			],
 			"url": "https://json.schemastore.org/io-package"
 		}
+	],
+	"cSpell.words": [
+		"bricklet",
+		"bssid",
+		"configurated",
+		"evse",
+		"iobroker",
+		"kvarh",
+		"Mbit",
+		"relais",
+		"rssi",
+		"ssid",
+		"UNCONFIGURED",
+		"wallbox",
+		"wallboxes",
+		"WLAN"
 	]
 }

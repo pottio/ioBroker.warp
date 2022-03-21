@@ -1,5 +1,15 @@
 {
-	"warp adapter settings": "Настройки адаптера для warp",
-	"option1": "Опция 1",
-	"option2": "вариант 2"
+    "authEnabled": "Аутентификация включена",
+    "ip": "айпи адрес",
+    "ipNotConfigured": "IP-адрес не настроен",
+    "manufacturerHref": "Информация о продукте производителя",
+    "model": "Модель",
+    "modelNotConfigured": "Модель не настроена",
+    "password": "Пароль",
+    "product": "Продукт",
+    "productNotConfigured": "Продукт не настроен",
+    "secureConnection": "Безопасное соединение",
+    "secureConnectionNotSupported": "Безопасные соединения пока не поддерживаются зарядными устройствами WARP.",
+    "user": "Имя пользователя",
+    "userAndPasswordNotConfigured": "Имя пользователя или пароль не настроены"
 }

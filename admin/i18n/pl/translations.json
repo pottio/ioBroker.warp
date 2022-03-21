@@ -1,5 +1,15 @@
 {
-	"warp adapter settings": "Ustawienia adaptera dla warp",
-	"option1": "opcja 1",
-	"option2": "Opcja 2"
+    "authEnabled": "Uwierzytelnianie włączone",
+    "ip": "adres IP",
+    "ipNotConfigured": "Adres IP nie jest skonfigurowany",
+    "manufacturerHref": "Informacje o produkcie producenta",
+    "model": "Model",
+    "modelNotConfigured": "Model nie jest skonfigurowany",
+    "password": "Hasło",
+    "product": "Produkt",
+    "productNotConfigured": "Produkt nie jest skonfigurowany",
+    "secureConnection": "Połączenie chronione",
+    "secureConnectionNotSupported": "Bezpieczne połączenia nie są jeszcze obsługiwane przez ładowarki WARP",
+    "user": "Nazwa użytkownika",
+    "userAndPasswordNotConfigured": "Nazwa użytkownika lub hasło nie są skonfigurowane"
 }

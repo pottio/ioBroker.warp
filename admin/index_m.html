@@ -1,10 +1,9 @@
 <html>
 
 <head>
-
 	<!-- Load ioBroker scripts and styles-->
 	<link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
-	<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+	<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
 
 	<script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
@@ -18,38 +17,81 @@
 	<script type="text/javascript" src="words.js"></script>
 
 	<script type="text/javascript">
-		// This will be called by the admin adapter when the settings page loads
-		function load(settings, onChange) {
-			// example: select elements with id=key and class=value and insert value
-			if (!settings) return;
+		var secret;
+		function encrypt(key, value) {
+			var result = '';
+			for (var i = 0; i < value.length; ++i) {
+				result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+			}
+			return result;
+		}
+		function decrypt(key, value) {
+			var result = '';
+			if (value) {
+				for (var i = 0; i < value.length; ++i) {
+					result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
+				}
+			}
+			return result;
+		}
+
+		function showHideUsernamePassword() {
+			if ($('#authEnabled').prop('checked') === true) {
+				$('#usernameAndPassword').show();
+			} else {
+				$('#usernameAndPassword').hide();
+			}
+		}
+
+		function init(settings, onChange) {
 			$('.value').each(function () {
+				var $value = $('#' + id + '.value');
 				var $key = $(this);
 				var id = $key.attr('id');
+				if (id === 'password') {
+					let decrypted = decrypt(secret, settings[id]);
+					settings[id] = decrypted;
+				}
 				if ($key.attr('type') === 'checkbox') {
 					// do not call onChange direct, because onChange could expect some arguments
-					$key.prop('checked', settings[id])
+					$key.prop('checked', settings[id]).on('change', () => showHideUsernamePassword());
+				} else if ($key.hasClass('isBoolean')) {
+					$key.val(settings[id].toString())
 						.on('change', () => onChange())
-						;
+						.on('keyup', () => onChange());
 				} else {
 					// do not call onChange direct, because onChange could expect some arguments
 					$key.val(settings[id])
 						.on('change', () => onChange())
-						.on('keyup', () => onChange())
-						;
+						.on('keyup', () => onChange());
 				}
 			});
-			onChange(false);
+			$('#product.value').val(settings.product).select();
+			$('#model.value').val(settings.model).select();
+
+			showHideUsernamePassword();
+			if (!settings) return;
 			// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
 			if (M) M.updateTextFields();
 		}
 
+		// This will be called by the admin adapter when the settings page loads
+		function load(settings, onChange) {
+			socket.emit('getObject', 'system.config', function (err, obj) {
+				secret = (obj.native ? obj.native.secret : '') || 'Zgfr56gFe87jJOM';
+				init(settings, onChange);
+			});
+			onChange(false);
+		}
+
 		// This will be called by the admin adapter when the user presses the save button
 		function save(callback) {
-			// example: select elements with class=value and build settings object
 			var obj = {};
 			$('.value').each(function () {
 				var $this = $(this);
-				if ($this.attr('type') === 'checkbox') {
+				if ($this.attr('id') === 'password') {
+					obj[$this.attr('id')] = encrypt(secret, $this.val());
+				} else if ($this.attr('type') === 'checkbox') {
 					obj[$this.attr('id')] = $this.prop('checked');
 				} else if ($this.attr('type') === 'number') {
 					obj[$this.attr('id')] = parseFloat($this.val());
@@ -57,39 +99,102 @@
 					obj[$this.attr('id')] = $this.val();
 				}
 			});
+			var product = $('#product').find(":selected").text();
+			if (product.length <= 0) {
+				showToast(_('productNotConfigured'));
+				return;
+			}
+			obj['product'] = product.includes('WARP2') ? 'warp2' : 'warp1';
+			var model = $('#model').find(":selected").text();
+			if (model.length <= 0) {
+				showToast(_('modelNotConfigured'));
+				return;
+			}
+			obj['model'] = model.toLowerCase();
+			if (obj['ip'].length <= 0) {
+				showToast(_('ipNotConfigured'));
+				return;
+			}
+			if (obj['secureConnection'] === true) {
+				showToast(_('secureConnectionNotSupported'));
+				return;
+			}
+			if (obj['authEnabled'] === true) {
+				if (obj['user'] <= 0 || obj['password'] <= 0) {
+					showToast(_('userAndPasswordNotConfigured'));
+					return;
+				}
+			}
 			callback(obj);
 		}
 	</script>
-
 </head>
 
 <body>
-
 	<div class="m adapter-container">
-
 		<div class="row">
 			<div class="col s12 m4 l2">
-				<img src="warp.png" class="logo">
+				<img src="warp.png" class="logo" />
 			</div>
 		</div>
 
-		<!-- Put your content here -->
-
-		<!-- For example columns with settings: -->
 		<div class="row">
 			<div class="col s6 input-field">
-				<input type="checkbox" class="value" id="option1" />
-				<label for="option1" class="translate">option1</label>
+				<input type="text" class="value" id="ip" />
+				<label for="ip" class="translate">ip</label>
 			</div>
-
 			<div class="col s6 input-field">
-				<input type="text" class="value" id="option2" />
-				<label for="option2" class="translate">option2</label>
+				<input type="checkbox" class="value" id="secureConnection" disabled />
+				<label for="secureConnection" class="translate">secureConnection</label>
+				<div>
+					<small class="translate">secureConnectionNotSupported</small>
+				</div>
 			</div>
 		</div>
 
-	</div>
+		<div class="row">
+			<div class="col s12 input-field">
+				<input type="checkbox" class="value" id="authEnabled" />
+				<label for="authEnabled" class="translate">authEnabled</label>
+			</div>
+		</div>
+		<div class="row" id="usernameAndPassword">
+			<div class="col s6 input-field">
+				<input type="text" class="value" id="user" />
+				<label for="user" class="translate">user</label>
+			</div>
+			<div class="col s6 input-field">
+				<input type="password" class="value" id="password" />
+				<label for="password" class="translate">password</label>
+			</div>
+		</div>
+		<div class="row">
+			<!-- space -->
+		</div>
+		<div class="row">
+			<div class="col s6 input-field">
+				<select class="value" id="product">
+					<option value="warp">WARP(1) Charger</option>
+					<option value="warp2">WARP2 Charger</option>
+				</select>
+				<label for="product" class="translate">product</label>
+				<div>
+					<small class="translate">manufacturerHref</small><small> : <a
+							href="https://www.warp-charger.com/index_warp1.html" target="_blank">WARP(1)</a> |
+						<a href="https://www.warp-charger.com/" target="_blank">WARP2</a></small>
+				</div>
+			</div>
 
+			<div class="col s6 input-field">
+				<select class="value" id="model">
+					<option value="smart">Smart</option>
+					<option value="pro">Pro</option>
+				</select>
+				<label for="model" class="translate">model</label>
+			</div>
+		</div>
+	</div>
+	</div>
 </body>
 
 </html>

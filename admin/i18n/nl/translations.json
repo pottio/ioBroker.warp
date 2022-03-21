@@ -1,5 +1,15 @@
 {
-	"warp adapter settings": "Adapterinstellingen voor warp",
-	"option1": "Optie 1",
-	"option2": "Optie 2"
+    "authEnabled": "Verificatie ingeschakeld",
+    "ip": "IP adres",
+    "ipNotConfigured": "IP-adres is niet geconfigureerd",
+    "manufacturerHref": "Productinformatie fabrikant:",
+    "model": "Model",
+    "modelNotConfigured": "Model is niet geconfigureerd",
+    "password": "Wachtwoord",
+    "product": "Product",
+    "productNotConfigured": "Product is niet geconfigureerd",
+    "secureConnection": "Beveiligde verbinding",
+    "secureConnectionNotSupported": "Beveiligde verbindingen worden nog niet ondersteund door WARP-opladers",
+    "user": "gebruikersnaam",
+    "userAndPasswordNotConfigured": "Gebruikersnaam of wachtwoord zijn niet geconfigureerd"
 }

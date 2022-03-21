@@ -12,13 +12,6 @@ module.exports = {
 	plugins: [],
 	rules: {
 		'indent': 'off',
-		'@typescript-eslint/indent': [
-			'error',
-			'tab',
-			{
-				'SwitchCase': 1
-			}
-		],
 		'quotes': [
 			'error',
 			'single',
