@@ -76,6 +76,7 @@ export class WarpApiParameter {
     public actionTopic?: string;
     public actionPayloadTemplate?: any;
     public actionType?: WarpApiActionType;
+    public actionMethod?: 'PUT' | 'GET';
     public enumValues?: { [index: number]: string; };
     public unit?: string;
     public listItems?: WarpApiParameter[];
@@ -137,9 +138,10 @@ export class WarpApiParameterBuilder {
         this._warpApiParameter.actionPayloadTemplate = payloadTemplate;
         return this;
     }
-    actionSendCommand(topic: string, payloadTemplate?: any): WarpApiParameterBuilder {
+    actionSendCommand(topic: string, method: 'PUT' | 'GET', payloadTemplate?: any): WarpApiParameterBuilder {
         this._warpApiParameter.actionTopic = topic;
         this._warpApiParameter.actionType = 'send-command';
+        this._warpApiParameter.actionMethod = method;
         this._warpApiParameter.actionPayloadTemplate = payloadTemplate;
         return this;
     }

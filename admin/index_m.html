@@ -54,7 +54,10 @@
 				}
 				if ($key.attr('type') === 'checkbox') {
 					// do not call onChange direct, because onChange could expect some arguments
-					$key.prop('checked', settings[id]).on('change', () => showHideUsernamePassword());
+					$key.prop('checked', settings[id]).on('change', () => {
+						showHideUsernamePassword();
+						onChange();
+					});
 				} else if ($key.hasClass('isBoolean')) {
 					$key.val(settings[id].toString())
 						.on('change', () => onChange())
@@ -174,7 +177,7 @@
 		<div class="row">
 			<div class="col s6 input-field">
 				<select class="value" id="product">
-					<option value="warp">WARP(1) Charger</option>
+					<option value="warp1">WARP(1) Charger</option>
 					<option value="warp2">WARP2 Charger</option>
 				</select>
 				<label for="product" class="translate">product</label>

@@ -8,10 +8,14 @@ import { WarpMessage } from './models';
 
 export class WarpClient {
     private readonly _reconnectTimeoutInSeconds = 60;
+    private readonly _connectionCheckIntervalInSeconds = 15;
+    private readonly _maxAllowedDistanceBetweenKeepAliveInSeconds = 40;
     private readonly _messageEncoding = 'utf-8';
     private readonly _adapter: WarpAdapter;
     private readonly _log: ContextLogger;
     private _reconnectTimeout!: NodeJS.Timeout;
+    private _checkConnectionInterval!: NodeJS.Timeout;
+    private _lastReceivedKeepAliveTimestamp!: number;
     private _apiBasePath!: string;
     private _webSocketBasePath!: string;
     private _nonceCount = 1;
@@ -25,6 +29,7 @@ export class WarpClient {
     constructor(adapter: WarpAdapter) {
         this._adapter = adapter;
         this._log = new ContextLogger(adapter, WarpClient.name);
+        this._lastReceivedKeepAliveTimestamp = Date.now();
     }
 
     public async connectAsync(): Promise<void> {
@@ -33,6 +38,7 @@ export class WarpClient {
             // eslint-disable-next-line @typescript-eslint/no-this-alias
             const warpClient = this;
             if (this._reconnectTimeout) clearTimeout(this._reconnectTimeout);
+            if (this._checkConnectionInterval) clearInterval(this._checkConnectionInterval);
             this._apiBasePath = `http${this._adapter.config.secureConnection ? 's' : ''}://${this._adapter.config.ip}`;
             this._webSocketBasePath = `ws${this._adapter.config.secureConnection ? 's' : ''}://${this._adapter.config.ip}`;
             this._log.debug(`WARP charger api base path: '${this._apiBasePath}'. Websocket base path: '${this._webSocketBasePath}'`)
@@ -51,6 +57,7 @@ export class WarpClient {
 
     public disconnect(): void {
         if (this._reconnectTimeout) clearTimeout(this._reconnectTimeout);
+        if (this._checkConnectionInterval) clearInterval(this._checkConnectionInterval);
         this._adapterIsShuttingDown = true;
         if (this._ws) {
             this._log.info('Disconnecting from WARP charger');
@@ -58,18 +65,20 @@ export class WarpClient {
         }
     }
 
-    public async sendMessageAsync(message: WarpMessage): Promise<void> {
+    public async sendMessageAsync(message: WarpMessage, method: 'PUT' | 'GET' = 'PUT'): Promise<void> {
         this._log.info('Send message to WARP charger');
         this._log.silly('Message: ' + JSON.stringify(message));
         try {
             const path = `/${message.topic}`;
-            const authorizationToken = await this.getAuthorizationTokenAsync(path, 'PUT');
+            const authorizationToken = await this.getAuthorizationTokenAsync(path, method);
             const headers: axios.AxiosRequestHeaders = authorizationToken ? { Accept: 'application/json', Authorization: authorizationToken } : { Accept: 'application/json' };
+            const url = `${this._apiBasePath}${path}`;
+            this._log.debug(`${method}: ${url}`);
             await axios.default({
                 headers: headers,
-                method: 'PUT',
-                url: `${this._apiBasePath}${path}`,
-                data: message.payload
+                method: method,
+                url: url,
+                data: method === 'PUT' ? message.payload : undefined
             });
         } catch (e) {
             this._log.error('Sending message to WARP charger failed', e);
@@ -112,6 +121,7 @@ export class WarpClient {
         this._log.info('Connected to WARP charger');
         this._successfulInitialConnection = true;
         await this._adapter.setStateAsync('info.connection', true, true);
+        this._checkConnectionInterval = setInterval(() => this.checkConnection(), this._connectionCheckIntervalInSeconds * 1000);
     }
 
     private async handleWebSocketMessageAsync(data: WebSocketClient.RawData): Promise<void> {
@@ -122,6 +132,7 @@ export class WarpClient {
                 const message = <WarpMessage>JSON.parse(s);
                 if (message.topic === 'keep-alive') {
                     this._log.debug('Got keep alive from WARP charger');
+                    this._lastReceivedKeepAliveTimestamp = Date.now();
                 } else if (!this._adapterIsShuttingDown) {
                     this.webSocketMessageEmitter.emit('message', message);
                 }
@@ -136,12 +147,44 @@ export class WarpClient {
     private async handleWebSocketDisconnectedAsync(_data: number): Promise<void> {
         await this._adapter.setStateAsync('info.connection', false, true);
         if (!this._adapterIsShuttingDown && this._successfulInitialConnection) {
-            this._log.warn(`Unexpected disconnected from WARP charger. Try reconnecting in ${this._reconnectTimeoutInSeconds} seconds`);
-            this._reconnectTimeout = setTimeout(() => {
-                if (!this._adapterIsShuttingDown && this._successfulInitialConnection) {
-                    this.connectAsync();
-                }
-            }, this._reconnectTimeoutInSeconds * 1000);
+            if (_data === -1) {
+                this._log.warn(`Try reconnecting`);
+                this.connectAsync();
+            } else {
+                this._log.warn(`Unexpected disconnected from WARP charger. Try reconnecting in ${this._reconnectTimeoutInSeconds} seconds`);
+                this._reconnectTimeout = setTimeout(() => {
+                    if (!this._adapterIsShuttingDown
+                        && this._successfulInitialConnection
+                        && this.getSecondsSinceLastKeepAlive() > this._maxAllowedDistanceBetweenKeepAliveInSeconds) {
+                        this.connectAsync();
+                    }
+                }, this._reconnectTimeoutInSeconds * 1000);
+            }
         }
+    }
+
+    private checkConnection(): void {
+        this._log.debug('Check last received keep alive timestamp');
+        try {
+            const seconds = this.getSecondsSinceLastKeepAlive();
+            if (seconds >= 0) {
+                if (seconds > this._maxAllowedDistanceBetweenKeepAliveInSeconds) {
+                    this._log.info(`Last received keep alive timestamp is older than ${this._maxAllowedDistanceBetweenKeepAliveInSeconds} seconds`);
+                    this.handleWebSocketDisconnectedAsync(-1);
+                } else {
+                    this._log.debug(`Last received keep alive is ${seconds} seconds ago`);
+                }
+            }
+        } catch (e) {
+            this._log.error('Checking last received keep alive timestamp failed', e);
+        }
+    }
+
+    private getSecondsSinceLastKeepAlive(): number {
+        if (this._lastReceivedKeepAliveTimestamp) {
+            const ms = Date.now() - this._lastReceivedKeepAliveTimestamp;
+            return Math.floor(ms / 1000);
+        }
+        return -1;
     }
 }

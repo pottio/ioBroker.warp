@@ -59,6 +59,7 @@ class WarpService {
     this._log.info("Terminated");
   }
   async handleStateChangedAsync(id, state) {
+    var _a;
     if (state.ack === false) {
       this._log.info(`Handle changed state by user with id '${id}' to value '${state.val}'`);
       try {
@@ -68,7 +69,7 @@ class WarpService {
           this._log.silly(`Definition for id: ${JSON.stringify(parameter)}`);
           const payload = await this.transformPayloadAsync(state, section, parameter);
           if (parameter.actionTopic) {
-            await this._client.sendMessageAsync({ topic: parameter.actionTopic, payload });
+            await this._client.sendMessageAsync({ topic: parameter.actionTopic, payload }, (_a = parameter.actionMethod) != null ? _a : "PUT");
           } else {
             this._log.warn(`Invalid action definition. WARP will not be notified about changed state`);
           }
@@ -201,7 +202,7 @@ class WarpService {
     return +version.replace(/\./g, "");
   }
   async initialCreateOrOverrideAllObjectsAsync(parameterIdsForOverride) {
-    this._log.info(`Create if not exists of override all objects for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
+    this._log.info(`Create if not exists or override all objects for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
     try {
       for (const section of this._apiDefinitions.getAllSectionsForConfig()) {
         await this.createObjectsForSectionIfNotExistsAsync(section);
@@ -258,6 +259,7 @@ class WarpService {
         obj.common.role = "indicator";
         break;
       case "button":
+        obj.common.read = false;
         obj.common.type = "boolean";
         obj.common.role = "button";
         if (parameter.buttonType === "start")
