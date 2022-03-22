@@ -43,6 +43,7 @@ module.exports = __toCommonJS(main_exports);
 var utils = __toESM(require("@iobroker/adapter-core"));
 var import_context_logger = require("./lib/context-logger");
 var import_warp_service = require("./warp/warp-service");
+var import_crypto = require("./lib/crypto");
 class WarpAdapter extends utils.Adapter {
   constructor(options = {}) {
     super(__spreadProps(__spreadValues({}, options), {
@@ -57,15 +58,26 @@ class WarpAdapter extends utils.Adapter {
   async onReadyAsync() {
     var _a;
     this._log.info("Start initializing WARP adapter");
-    this.setState("info.connection", false, true);
-    const product = await this.getStateAsync("info.product");
-    const model = await this.getStateAsync("info.model");
-    const version = await this.getStateAsync("info.version");
-    const configurationChanged = this.config.product !== (product == null ? void 0 : product.val) || this.config.model !== (model == null ? void 0 : model.val);
-    await this._warpService.initAsync(configurationChanged, (_a = version == null ? void 0 : version.val) != null ? _a : "0.0.0");
-    await this.setStateAsync("info.product", this.config.product, true);
-    await this.setStateAsync("info.model", this.config.model, true);
-    await this.setStateAsync("info.version", this.version, true);
+    try {
+      await this.setStateAsync("info.connection", false, true);
+      if (this.config.authEnabled) {
+        this._log.debug("Auth enabled. Decrypt password");
+        this.config.password = await import_crypto.Encryption.decrypt(this, this.config.password);
+      }
+      const version = await this.getStateAsync("info.version");
+      this._log.debug(`Adapter version on last adapter execution: '${version == null ? void 0 : version.val}'`);
+      const product = await this.getStateAsync("info.product");
+      const model = await this.getStateAsync("info.model");
+      const configurationChanged = this.config.product !== (product == null ? void 0 : product.val) || this.config.model !== (model == null ? void 0 : model.val);
+      if (configurationChanged)
+        this._log.debug(`Configuration changed. Product: '${product == null ? void 0 : product.val}' -> '${this.config.product}' | Model: '${model == null ? void 0 : model.val}' -> '${this.config.model}'`);
+      await this._warpService.initAsync(configurationChanged, (_a = version == null ? void 0 : version.val) != null ? _a : "0.0.0");
+      await this.setStateAsync("info.product", this.config.product, true);
+      await this.setStateAsync("info.model", this.config.model, true);
+      await this.setStateAsync("info.version", this.version, true);
+    } catch (e) {
+      this._log.error("Initializing failed", e);
+    }
     this._log.info("WARP adapter initialized");
   }
   async onUnloadAsync(callback) {

@@ -2,7 +2,8 @@ import { Param, WarpApi, WarpApiMigration, WarpApiSection } from './models';
 
 export class WarpApiDefinitions {
     public readonly migrations: { [version: string]: WarpApiMigration; } = {
-        '0.0.1': { deletedParameterIds: [], changedParameterIds: [] }
+        '0.0.1': { deletedParameterIds: [], changedParameterIds: [] },
+        '0.0.2': { deletedParameterIds: ['esp'], changedParameterIds: [] }
     }
     private readonly _configuredProduct: string;
     private readonly _configuredModel: string;
@@ -160,7 +161,7 @@ export class WarpApiDefinitions {
         ]);
         evse.add('evse/dc_fault_current_state', 'The state of the DC fault current protection module. If a DC fault occurs, charging is no longer possible until the protection module has been reset. Before resetting, it is imperative that the reason for the fault is rectified!', [
             Param.enum('state', { 0: 'NO_ERROR', 1: 'FAULT_CURRENT_DETECTED', 2: 'SYSTEM_ERROR', 3: 'UNKNOWN_ERROR', 4: 'CALIBRATION_ERROR' }).onlyWarp2().withDescription('The current charging power').onlyWarp2().build(),
-            Param.butt('reset_dc_fault_current', 'normal').onlyWarp2().withDescription('Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!').actionSendCommand('evse/reset_dc_fault_current', `{ "password": "0xDC42FA23" }`).build()
+            Param.butt('reset_dc_fault_current', 'normal').onlyWarp2().withDescription('Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!').actionSendCommand('evse/reset_dc_fault_current', 'PUT', `{ "password": "0xDC42FA23" }`).build()
         ]);
         evse.add('evse/gpio_configuration', 'The configuration of the configurable inputs and outputs', [
             Param.enum('shutdown_input', { 0: 'NOT_CONFIGURED', 1: 'TURN_OFF_WHEN_OPENED', 2: 'TURN_OFF_WHEN_CLOSED' }).onlyWarp2().withDescription('The configuration of the switch-off input').actionUpdateConfig('evse/gpio_configuration_update').build(),
@@ -179,8 +180,8 @@ export class WarpApiDefinitions {
             Param.bool('managed').withDescription('true if load management is activated, otherwise false').actionUpdateValue('evse/managed_update', `{ "managed": # }`).build()
         ]);
         evse.add('evse/manual_charging', 'Allows to start and stop a charging process, when auto start charging is disabled.', [
-            Param.butt('start_charging', 'start').withDescription('Starts a charging process').actionSendCommand('evse/start_charging').build(),
-            Param.butt('stop_charging', 'stop').withDescription('Stops a charging process').actionSendCommand('evse/start_charging').build()
+            Param.butt('start_charging', 'start').withDescription('Starts a charging process').actionSendCommand('evse/start_charging', 'PUT').build(),
+            Param.butt('stop_charging', 'stop').withDescription('Stops a charging process').actionSendCommand('evse/start_charging', 'PUT').build()
         ]);
         return evse;
     }
@@ -298,7 +299,7 @@ export class WarpApiDefinitions {
                 .build()
         ]);
         meter.add('meter/reset', 'Resets the energy meter', [
-            Param.butt('reset').withDescription('Resets the energy meter').actionSendCommand('meter/reset').build(),
+            Param.butt('reset').withDescription('Resets the energy meter').actionSendCommand('meter/reset', 'PUT').build(),
         ]);
 
         return meter;
@@ -368,7 +369,7 @@ export class WarpApiDefinitions {
             Param.text('sta_bssid').withDescription('The BSSID of the remote station to which the wallbox is connected').build(),
         ]);
         wifi.add('wifi/scan', 'Triggers a scan for WLANs', [
-            Param.butt('scan').withDescription('Triggers a scan for WLANs').actionSendCommand('wifi/scan').build()
+            Param.butt('scan').withDescription('Triggers a scan for WLANs').actionSendCommand('wifi/scan', 'PUT').build()
         ]);
         wifi.add('wifi/sta_config', 'The WLAN connection configuration', [
             Param.bool('enable_sta').withDescription('Indicates whether a WLAN connection to the configured network should be established').actionUpdateConfig('wifi/sta_config_update').build(),
@@ -450,10 +451,6 @@ export class WarpApiDefinitions {
             Param.bool('cm_networking').build(),
             Param.bool('nfc').build(),
         ]);
-        const esp = new WarpApi('esp', '', true);
-        esp.add('esp', 'ESP controlling', [
-            Param.butt('reboot').withDescription('Restarts the ESP to apply configuration changes, for example').actionSendCommand('reboot').build()
-        ]);
-        return [...version.sections, ...modules.sections, ...esp.sections];
+        return [...version.sections, ...modules.sections];
     }
 }
