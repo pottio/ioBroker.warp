@@ -74,7 +74,7 @@
 	},
 	"native": {
 		"authEnabled": false,
-        "ip": "",
+        "ipOrHostname": "",
         "model": "",
         "password": "",
         "product": "",

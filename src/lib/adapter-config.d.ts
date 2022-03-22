@@ -5,7 +5,7 @@ declare global {
 	namespace ioBroker {
 		interface AdapterConfig {
 			authEnabled: boolean,
-			ip: string,
+			ipOrHostname: string,
 			model: string,
 			password: string,
 			product: string,

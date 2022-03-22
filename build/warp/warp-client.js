@@ -50,8 +50,8 @@ class WarpClient {
         clearTimeout(this._reconnectTimeout);
       if (this._checkConnectionInterval)
         clearInterval(this._checkConnectionInterval);
-      this._apiBasePath = `http${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ip}`;
-      this._webSocketBasePath = `ws${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ip}`;
+      this._apiBasePath = `http${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ipOrHostname}`;
+      this._webSocketBasePath = `ws${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ipOrHostname}`;
       this._log.debug(`WARP charger api base path: '${this._apiBasePath}'. Websocket base path: '${this._webSocketBasePath}'`);
       if (this._ws)
         this._ws.close();
