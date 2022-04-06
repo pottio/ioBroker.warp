@@ -121,9 +121,14 @@ export class WarpService {
                 const sectionId = this.getSectionId(message);
                 const state = message.payload[property];
                 const parameter = parameters.find(param => param.name === property);
-                if (parameter && parameter.type === 'list' && isArray(state) && parameter.listItems?.length === (<[]>state)?.length) {
-                    for (let index = 0; index < parameter.listItems.length; index++) {
-                        await this.setStateSafelyAsync(`${sectionId}.${parameter.name}.${parameter.listItems[index].name}`, (<[]>state)[index]);
+                if (parameter && parameter.type === 'list') {
+                    if (isArray(state) && parameter.listItems?.length === (<[]>state)?.length) {
+                        for (let index = 0; index < parameter.listItems.length; index++) {
+                            await this.setStateSafelyAsync(`${sectionId}.${parameter.name}.${parameter.listItems[index].name}`, (<[]>state)[index]);
+                        }
+                    } else {
+                        const id = `${sectionId}.${property}.payload`;
+                        await this.setStateSafelyAsync(id, state);
                     }
                 } else {
                     const id = `${sectionId}.${property}`;
@@ -236,7 +241,7 @@ export class WarpService {
         let obj: ioBroker.SettableObject = { type: 'state', common: { name: parameter.description, role: '', read: true, write: parameter.hasAction() }, native: {} };
         switch (parameter.type) {
             case 'list':
-                obj = { type: 'channel', common: { name: parameter.description }, native: {} }
+                obj = { type: 'channel', common: { name: parameter.description }, native: {} };
                 break;
             case 'enum':
                 obj.common.type = 'number';
