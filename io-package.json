@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "warp",
-        "version": "0.0.3",
+        "version": "0.0.4",
         "news": {
+            "0.0.4": {
+                "en": "fixed bug",
+                "de": "Fehler behoben",
+                "ru": "исправлена ошибка",
+                "pt": "bug corrigido",
+                "nl": "bug opgelost",
+                "fr": "bogue corrigé",
+                "it": "bug corretto",
+                "es": "error corregido",
+                "pl": "naprawiony błąd",
+                "zh-cn": "修复错误"
+            },
             "0.0.3": {
                 "en": "fixed bugs\nadded instance link",
                 "de": "Behobene Fehler\nInstanzlink hinzugefügt",
