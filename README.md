@@ -11,6 +11,10 @@
 
 ## WARP charger adapter for ioBroker
 
+:warning: :warning: 
+**This adapter is compatible with WARP firmware version < 2.0.0** :warning: :warning: 
+_Support for WARP firmware version >= 2.0.0 is still in development_
+
 This adapter monitors and controls a wallbox [(WARP charger)](https://www.warp-charger.com/) by [Tinkerforge](https://www.tinkerforge.com/de/) via ioBroker. The connection will be established via WebSockets.
 
 Why using this adapter - it is also possible to connect the wallbox to ioBroker via MQTT ?! 
