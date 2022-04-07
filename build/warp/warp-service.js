@@ -22,7 +22,6 @@ __export(warp_service_exports, {
 module.exports = __toCommonJS(warp_service_exports);
 var import_tools = require("../lib/tools");
 var import_context_logger = require("./../lib/context-logger");
-var import_warp_api_definitions = require("./warp-api-definitions");
 var import_warp_client = require("./warp-client");
 class WarpService {
   constructor(adapter) {
@@ -32,14 +31,15 @@ class WarpService {
     this._log = new import_context_logger.ContextLogger(adapter, WarpService.name);
     this._client = new import_warp_client.WarpClient(adapter);
   }
-  async initAsync(configurationChanged, versionBeforeUpdate) {
+  async initAsync(versionBeforeUpdate) {
     this._log.info("Initializing");
     try {
-      this._log.info(`Generate API definitions for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
-      this._apiDefinitions = new import_warp_api_definitions.WarpApiDefinitions(this._adapter.config.product, this._adapter.config.model);
-      if (configurationChanged) {
-        await this.deleteAllObjectsWithSpecificProductOrModelDefinitionAsync();
+      await this._client.initAsync();
+      const metaInformation = await this._client.getMetaInformationForStartup();
+      if (!metaInformation) {
+        throw new Error("Unable to receive meta information from WARP. Please make sure firmware version >= 2.0.0 is installed on your WARP charger");
       }
+      this._log.info(`Received information from ${metaInformation.displayType} (${metaInformation.name}) with firmware version ${metaInformation.firmwareVersion}`);
       const parameterIdsForOverride = await this.deleteObjectsRemovedFromDefinitionsAfterAdapterUpdateAsync(versionBeforeUpdate);
       await this.initialCreateOrOverrideAllObjectsAsync(parameterIdsForOverride);
       await this._client.connectAsync();
@@ -207,19 +207,6 @@ class WarpService {
     return +version.replace(/\./g, "");
   }
   async initialCreateOrOverrideAllObjectsAsync(parameterIdsForOverride) {
-    this._log.info(`Create if not exists or override all objects for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
-    try {
-      for (const section of this._apiDefinitions.getAllSectionsForConfig()) {
-        await this.createObjectsForSectionIfNotExistsAsync(section);
-        for (const parameter of section.parameters) {
-          if (parameter.isRelevantFor(this._adapter.config.product, this._adapter.config.model)) {
-            await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter, parameterIdsForOverride);
-          }
-        }
-      }
-    } catch (e) {
-      this._log.error("Creating or overriding objects failed", e);
-    }
   }
   async createObjectsForSectionIfNotExistsAsync(section) {
     if (!section.api.preventCreating) {

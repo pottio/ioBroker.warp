@@ -56,11 +56,11 @@ class WarpApiSection {
     this.description = description;
     this.parameters = parameters;
   }
-  hasParametersFor(product, model) {
-    return this.parameters.some((param) => param.isRelevantFor(product, model));
+  hasParametersFor(product) {
+    return this.parameters.some((param) => param.isRelevantFor(product));
   }
   filterSpecificParameters() {
-    return this.parameters.filter((param) => param.relevantForProducts !== WarpProduct.all || param.relevantForModels !== WarpModel.all);
+    return this.parameters.filter((param) => param.relevantForProducts !== WarpProduct.all);
   }
   get id() {
     return this.topic.replace("/", ".");
@@ -74,11 +74,10 @@ class WarpApiParameter {
     this.name = name;
     this.description = "";
     this.type = type;
-    this.relevantForModels = WarpModel.all;
     this.relevantForProducts = WarpProduct.all;
   }
-  isRelevantFor(product, model) {
-    return this.relevantForProducts.some((prod) => prod === product) && this.relevantForModels.some((mod) => mod === model);
+  isRelevantFor(product) {
+    return this.relevantForProducts.some((prod) => prod === product);
   }
   hasActionType(actionType) {
     return this.actionType === actionType;
@@ -101,14 +100,6 @@ class WarpApiParameterBuilder {
   }
   onlyWarp2() {
     this._warpApiParameter.relevantForProducts = [WarpProduct.warp2];
-    return this;
-  }
-  onlyModelSmart() {
-    this._warpApiParameter.relevantForModels = [WarpModel.smart];
-    return this;
-  }
-  onlyModelPro() {
-    this._warpApiParameter.relevantForModels = [WarpModel.pro];
     return this;
   }
   actionUpdateValue(topic, payloadTemplate) {

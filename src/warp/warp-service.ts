@@ -18,14 +18,23 @@ export class WarpService {
         this._client = new WarpClient(adapter);
     }
 
-    public async initAsync(configurationChanged: boolean, versionBeforeUpdate: string): Promise<void> {
+    public async initAsync(versionBeforeUpdate: string): Promise<void> {
         this._log.info('Initializing');
         try {
-            this._log.info(`Generate API definitions for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
-            this._apiDefinitions = new WarpApiDefinitions(this._adapter.config.product, this._adapter.config.model);
-            if (configurationChanged) {
-                await this.deleteAllObjectsWithSpecificProductOrModelDefinitionAsync();
+            await this._client.initAsync();
+
+            const metaInformation = await this._client.getMetaInformationForStartup();
+            if (!metaInformation) {
+                throw new Error('Unable to receive meta information from WARP. Please make sure firmware version >= 2.0.0 is installed on your WARP charger');
             }
+            this._log.info(`Received information from ${metaInformation.displayType} (${metaInformation.name}) with firmware version ${metaInformation.firmwareVersion}`);
+
+
+            // this._log.info(`Generate API definitions for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
+            // this._apiDefinitions = new WarpApiDefinitions(this._adapter.config.product, this._adapter.config.model);
+            // if (configurationChanged) {
+            //     await this.deleteAllObjectsWithSpecificProductOrModelDefinitionAsync();
+            // }
             const parameterIdsForOverride = await this.deleteObjectsRemovedFromDefinitionsAfterAdapterUpdateAsync(versionBeforeUpdate);
             await this.initialCreateOrOverrideAllObjectsAsync(parameterIdsForOverride);
             await this._client.connectAsync();
@@ -204,19 +213,19 @@ export class WarpService {
     }
 
     private async initialCreateOrOverrideAllObjectsAsync(parameterIdsForOverride: string[]): Promise<void> {
-        this._log.info(`Create if not exists or override all objects for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
-        try {
-            for (const section of this._apiDefinitions.getAllSectionsForConfig()) {
-                await this.createObjectsForSectionIfNotExistsAsync(section);
-                for (const parameter of section.parameters) {
-                    if (parameter.isRelevantFor(this._adapter.config.product, this._adapter.config.model)) {
-                        await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter, parameterIdsForOverride);
-                    }
-                }
-            }
-        } catch (e) {
-            this._log.error('Creating or overriding objects failed', e)
-        }
+        // this._log.info(`Create if not exists or override all objects for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
+        // try {
+        //     for (const section of this._apiDefinitions.getAllSectionsForConfig()) {
+        //         await this.createObjectsForSectionIfNotExistsAsync(section);
+        //         for (const parameter of section.parameters) {
+        //             if (parameter.isRelevantFor(this._adapter.config.product, this._adapter.config.model)) {
+        //                 await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter, parameterIdsForOverride);
+        //             }
+        //         }
+        //     }
+        // } catch (e) {
+        //     this._log.error('Creating or overriding objects failed', e)
+        // }
     }
 
     private async createObjectsForSectionIfNotExistsAsync(section: WarpApiSection): Promise<void> {

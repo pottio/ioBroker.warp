@@ -3,15 +3,14 @@ import { Param, WarpApi, WarpApiMigration, WarpApiSection } from './models';
 export class WarpApiDefinitions {
     public readonly migrations: { [version: string]: WarpApiMigration; } = {
         '0.0.1': { deletedParameterIds: [], changedParameterIds: [] },
-        '0.0.2': { deletedParameterIds: ['esp'], changedParameterIds: [] }
+        '0.0.2': { deletedParameterIds: ['esp'], changedParameterIds: [] },
+        '0.1.0': { deletedParameterIds: ['info.version', 'info.model', 'info.product'], changedParameterIds: [] },
     }
     private readonly _configuredProduct: string;
-    private readonly _configuredModel: string;
     private _definedSections: WarpApiSection[] = [];
 
-    constructor(configuredProduct: string, configuredModel: string) {
+    constructor(configuredProduct: string) {
         this._configuredProduct = configuredProduct;
-        this._configuredModel = configuredModel;
         this._definedSections = [
             ...this.defineEvse().sections,
             ...this.defineMeter().sections,
@@ -26,7 +25,7 @@ export class WarpApiDefinitions {
     }
 
     public getAllSections = (): WarpApiSection[] => this._definedSections;
-    public getAllSectionsForConfig = (): WarpApiSection[] => this.getAllSections().filter(section => section.hasParametersFor(this._configuredProduct, this._configuredModel));
+    public getAllSectionsForConfig = (): WarpApiSection[] => this.getAllSections().filter(section => section.hasParametersFor(this._configuredProduct));
     public getSectionByTopicForConfig = (topic: string): WarpApiSection | undefined => this.getAllSectionsForConfig().find(section => section.topic === topic);
     public getSectionByIdForConfig = (id: string): WarpApiSection | undefined => this.getAllSectionsForConfig().find(section => id.includes(section.id));
 
@@ -144,21 +143,21 @@ export class WarpApiDefinitions {
                 .item(Param.numb('slave_device_failure', 'Slave Device Failure').build())
                 .build()
         ]);
-        evse.add('evse/energy_meter_values', 'With WARP 2, the electricity meter is read by the charge controller itself', [
-            Param.numb('power', 'W').onlyModelPro().onlyWarp2().withDescription('The current charging power').build(),
-            Param.numb('energy_rel', 'kWh').onlyModelPro().onlyWarp2().withDescription('The charged energy since the last reset').build(),
-            Param.numb('energy_abs', 'kWh').onlyModelPro().onlyWarp2().withDescription('The charged energy since the electricity meter was manufactured').build(),
-            Param.list('phases_active').onlyModelPro().onlyWarp2().withDescription('The currently active phases')
-                .item(Param.bool('l1').withDescription('L1 phase active').build())
-                .item(Param.bool('l2').withDescription('L2 phase active').build())
-                .item(Param.bool('l3').withDescription('L3 phase active').build())
-                .build(),
-            Param.list('phases_connected').onlyModelPro().onlyWarp2().withDescription('The currently connected phases')
-                .item(Param.bool('l1').withDescription('L1 phase connected').build())
-                .item(Param.bool('l2').withDescription('L2 phase connected').build())
-                .item(Param.bool('l3').withDescription('L3 phase connected').build())
-                .build()
-        ]);
+        // evse.add('evse/energy_meter_values', 'With WARP 2, the electricity meter is read by the charge controller itself', [
+        //     Param.numb('power', 'W').onlyModelPro().onlyWarp2().withDescription('The current charging power').build(),
+        //     Param.numb('energy_rel', 'kWh').onlyModelPro().onlyWarp2().withDescription('The charged energy since the last reset').build(),
+        //     Param.numb('energy_abs', 'kWh').onlyModelPro().onlyWarp2().withDescription('The charged energy since the electricity meter was manufactured').build(),
+        //     Param.list('phases_active').onlyModelPro().onlyWarp2().withDescription('The currently active phases')
+        //         .item(Param.bool('l1').withDescription('L1 phase active').build())
+        //         .item(Param.bool('l2').withDescription('L2 phase active').build())
+        //         .item(Param.bool('l3').withDescription('L3 phase active').build())
+        //         .build(),
+        //     Param.list('phases_connected').onlyModelPro().onlyWarp2().withDescription('The currently connected phases')
+        //         .item(Param.bool('l1').withDescription('L1 phase connected').build())
+        //         .item(Param.bool('l2').withDescription('L2 phase connected').build())
+        //         .item(Param.bool('l3').withDescription('L3 phase connected').build())
+        //         .build()
+        // ]);
         evse.add('evse/dc_fault_current_state', 'The state of the DC fault current protection module. If a DC fault occurs, charging is no longer possible until the protection module has been reset. Before resetting, it is imperative that the reason for the fault is rectified!', [
             Param.enum('state', { 0: 'NO_ERROR', 1: 'FAULT_CURRENT_DETECTED', 2: 'SYSTEM_ERROR', 3: 'UNKNOWN_ERROR', 4: 'CALIBRATION_ERROR' }).onlyWarp2().withDescription('The current charging power').onlyWarp2().build(),
             Param.butt('reset_dc_fault_current', 'normal').onlyWarp2().withDescription('Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!').actionSendCommand('evse/reset_dc_fault_current', 'PUT', `{ "password": "0xDC42FA23" }`).build()
@@ -188,116 +187,116 @@ export class WarpApiDefinitions {
 
     private defineMeter(): WarpApi {
         const meter = new WarpApi('meter', 'Electric meter');
-        meter.add('meter/state', 'The state of the electricity meter', [
-            Param.enum('state', { 0: 'NO_METER_CONNECTED', 1: 'METER_UNRELIABLE', 2: 'METER_CONNECTED' }).onlyModelPro().onlyWarp1().withDescription('The state of the electricity meter').build(),
-            Param.numb('power', 'W').onlyModelPro().withDescription('The current charging power').build(),
-            Param.numb('energy_rel', 'kWh').onlyModelPro().withDescription('The charged energy since the last reset').build(),
-            Param.numb('energy_abs', 'kWh').onlyModelPro().withDescription('The charged energy since the electricity meter was manufactured').build(),
-            Param.list('phases_active').onlyModelPro().onlyWarp2().withDescription('The currently active phases')
-                .item(Param.bool('l1').withDescription('L1 phase active').build())
-                .item(Param.bool('l2').withDescription('L2 phase active').build())
-                .item(Param.bool('l3').withDescription('L3 phase active').build())
-                .build(),
-            Param.list('phases_connected').onlyModelPro().onlyWarp2().withDescription('The currently connected phases')
-                .item(Param.bool('l1').withDescription('L1 phase connected').build())
-                .item(Param.bool('l2').withDescription('L2 phase connected').build())
-                .item(Param.bool('l3').withDescription('L3 phase connected').build())
-                .build()
-        ]);
-        meter.add('meter/error_counters', 'Error counter of the communication with the electricity meter', [
-            Param.numb('meter').onlyModelPro().onlyWarp1().withDescription('Communication error between RS485 Bricklet and electricity meter').build(),
-            Param.numb('bricklet').onlyModelPro().onlyWarp1().withDescription('Communication error between ESP Brick and RS485 Bricklet').build(),
-            Param.numb('bricklet_reset').onlyModelPro().onlyWarp1().withDescription('Unexpected resets of the RS485 Bricklet').build(),
-        ]);
-        meter.add('meter/detailed_values', 'All measured values measured by the built-in electricity meter', [
-            Param.list('detailed_values').onlyModelPro()
-                .item(Param.numb('voltage_against_neutral_l1', 'V').withDescription('Voltage against neutral L1').build())
-                .item(Param.numb('voltage_against_neutral_l2', 'V').withDescription('Voltage against neutral L2').build())
-                .item(Param.numb('voltage_against_neutral_l3', 'V').withDescription('Voltage against neutral L3').build())
-                .item(Param.numb('power_l1', 'A').withDescription('Power L1').build())
-                .item(Param.numb('power_l2', 'A').withDescription('Power L2').build())
-                .item(Param.numb('power_l3', 'A').withDescription('Power L3').build())
-                .item(Param.numb('active_power_l1', 'W').withDescription('Active power L1').build())
-                .item(Param.numb('active_power_l2', 'W').withDescription('Active power L2').build())
-                .item(Param.numb('active_power_l3', 'W').withDescription('Active power L3').build())
-                .item(Param.numb('apparent_power_l1', 'VA').withDescription('Apparent power L1').build())
-                .item(Param.numb('apparent_power_l2', 'VA').withDescription('Apparent power L2').build())
-                .item(Param.numb('apparent_power_l3', 'VA').withDescription('Apparent power L3').build())
-                .item(Param.numb('reactive_power_l1', 'var').withDescription('Reactive power L1').build())
-                .item(Param.numb('reactive_power_l2', 'var').withDescription('Reactive power L2').build())
-                .item(Param.numb('reactive_power_l3', 'var').withDescription('Reactive power L3').build())
-                .item(Param.numb('power_factor_l1').withDescription('Power factor L1; The sign of the power factor indicates the direction of the current flow').build())
-                .item(Param.numb('power_factor_l2').withDescription('Power factor L2; The sign of the power factor indicates the direction of the current flow').build())
-                .item(Param.numb('power_factor_l3').withDescription('Power factor L3; The sign of the power factor indicates the direction of the current flow').build())
-                .item(Param.numb('relative_phase_shift_l1', '°').withDescription('Relative phase shift L1').build())
-                .item(Param.numb('relative_phase_shift_l2', '°').withDescription('Relative phase shift L2').build())
-                .item(Param.numb('relative_phase_shift_l3', '°').withDescription('Relative phase shift L3').build())
-                .item(Param.numb('average_voltage_against_neutral', 'V').withDescription('Average voltage against neutral').build())
-                .item(Param.numb('average_power', 'A').withDescription('Average power').build())
-                .item(Param.numb('total_phase_currents', 'A').withDescription('Total phase currents').build())
-                .item(Param.numb('total_active_power', 'W').withDescription('Total active power').build())
-                .item(Param.numb('total_apparent_power', 'VA').withDescription('Total apparent power').build())
-                .item(Param.numb('total_reactive_power', 'var').withDescription('Total reactive power').build())
-                .item(Param.numb('total_power_factor').withDescription('Total power factor').build())
-                .item(Param.numb('total_relative_phase_shift', '°').withDescription('Total relative phase shift').build())
-                .item(Param.numb('frequency_of_the_supply_voltage', 'Hz').withDescription('Frequency of the supply voltage').build())
-                .item(Param.numb('active_energy_import', 'kWh').withDescription('Active energy (import; taken from the vehicle)').build())
-                .item(Param.numb('active_energy_export', 'kWh').withDescription('Active energy (export; delivered from the vehicle)').build())
-                .item(Param.numb('reactive_energy_import', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle)').build())
-                .item(Param.numb('reactive_energy_export', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle)').build())
-                .item(Param.numb('total_apparent_energy', 'kVAh').withDescription('Total apparent energy').build())
-                .item(Param.numb('transported_electric_charge', 'Ah').withDescription('Transported electric charge').build())
-                .item(Param.numb('used_active_power', 'W').withDescription('Used active power; corresponds to import-export difference').build())
-                .item(Param.numb('max_used_active_power', 'W').withDescription('Maximum used active power; highest measured value').build())
-                .item(Param.numb('used_apparent_power', 'VA').withDescription('Used apparent power; corresponds to import-export difference').build())
-                .item(Param.numb('max_used_apparent_power', 'VA').withDescription('Maximum used apparent power; highest measured value').build())
-                .item(Param.numb('used_neutral_conductor_power', 'A').withDescription('Used neutral conductor power').build())
-                .item(Param.numb('max_used_neutral_conductor_power', 'A').withDescription('Maximum used neutral conductor power; highest measured value').build())
-                .item(Param.numb('voltage_l1_to_l2', 'V').withDescription('Voltage L1 to L2').build())
-                .item(Param.numb('voltage_l2_to_l3', 'V').withDescription('Voltage L2 to L3').build())
-                .item(Param.numb('voltage_l3_to_l1', 'V').withDescription('Voltage L3 to L1').build())
-                .item(Param.numb('average_voltage_between_phases', 'V').withDescription('Average voltage between phases').build())
-                .item(Param.numb('neutral_conductor_power', 'A').withDescription('Neutral conductor power').build())
-                .item(Param.numb('thd_voltage_l1', '%').withDescription('Total harmonic distortion (THD) of voltage L1').build())
-                .item(Param.numb('thd_voltage_l2', '%').withDescription('Total harmonic distortion (THD) of voltage L2').build())
-                .item(Param.numb('thd_voltage_l3', '%').withDescription('Total harmonic distortion (THD) of voltage L3').build())
-                .item(Param.numb('thd_power_l1', '%').withDescription('Total harmonic distortion (THD) of power L1').build())
-                .item(Param.numb('thd_power_l2', '%').withDescription('Total harmonic distortion (THD) of power L2').build())
-                .item(Param.numb('thd_power_l3', '%').withDescription('Total harmonic distortion (THD) of power L3').build())
-                .item(Param.numb('thd_voltage', '%').withDescription('Total harmonic distortion (THD) of voltage').build())
-                .item(Param.numb('thd_power', '%').withDescription('Total harmonic distortion (THD) of power').build())
-                .item(Param.numb('used_power_l1', 'A').withDescription('Used power L1').build())
-                .item(Param.numb('used_power_l2', 'A').withDescription('Used power L2').build())
-                .item(Param.numb('used_power_l3', 'A').withDescription('Used power L3').build())
-                .item(Param.numb('max_used_power_l1', 'A').withDescription('Maximum used power L1; highest measured value').build())
-                .item(Param.numb('max_used_power_l2', 'A').withDescription('Maximum used power L2; highest measured value').build())
-                .item(Param.numb('max_used_power_l3', 'A').withDescription('Maximum used power L3; highest measured value').build())
-                .item(Param.numb('thd_voltage_l1_to_l2', '%').withDescription('THD voltage L1 to L2').build())
-                .item(Param.numb('thd_voltage_l2_to_l3', '%').withDescription('THD voltage L2 to L3').build())
-                .item(Param.numb('thd_voltage_l3_to_l1', '%').withDescription('THD voltage L3 to L1').build())
-                .item(Param.numb('average_thd_voltage_between_phases', '%').withDescription('Average THD voltage between phases').build())
-                .item(Param.numb('total_active_energy', 'kWh').withDescription('Total active energy; import-export sum of all phases').build())
-                .item(Param.numb('total_reactive_energy', 'kvarh').withDescription('Total reactive energy; import-export sum of all phases').build())
-                .item(Param.numb('active_energy_import_l1', 'kWh').withDescription('Active energy (import; taken from the vehicle) L1').build())
-                .item(Param.numb('active_energy_import_l2', 'kWh').withDescription('Active energy (import; taken from the vehicle) L2').build())
-                .item(Param.numb('active_energy_import_l3', 'kWh').withDescription('Active energy (import; taken from the vehicle) L3').build())
-                .item(Param.numb('active_energy_export_l1', 'kWh').withDescription('Active energy (export; delivered from the vehicle) L1').build())
-                .item(Param.numb('active_energy_export_l2', 'kWh').withDescription('Active energy (export; delivered from the vehicle) L2').build())
-                .item(Param.numb('active_energy_export_l3', 'kWh').withDescription('Active energy (export; delivered from the vehicle) L3').build())
-                .item(Param.numb('total_active_energy_export_l1', 'kWh').withDescription('Total active energy; import-export sum L1').build())
-                .item(Param.numb('total_active_energy_export_l2', 'kWh').withDescription('Total active energy; import-export sum L2').build())
-                .item(Param.numb('total_active_energy_export_l3', 'kWh').withDescription('Total active energy; import-export sum L3').build())
-                .item(Param.numb('reactive_energy_import_l1', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle) L1').build())
-                .item(Param.numb('reactive_energy_import_l2', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle) L2').build())
-                .item(Param.numb('reactive_energy_import_l3', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle) L3').build())
-                .item(Param.numb('reactive_energy_export_l1', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle) L1').build())
-                .item(Param.numb('reactive_energy_export_l2', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle) L2').build())
-                .item(Param.numb('reactive_energy_export_l3', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle) L3').build())
-                .item(Param.numb('total_reactive_energy_l1', 'kvarh').withDescription('Total reactive energy; import-export sum L1').build())
-                .item(Param.numb('total_reactive_energy_l2', 'kvarh').withDescription('Total reactive energy; import-export sum L2').build())
-                .item(Param.numb('total_reactive_energy_l3', 'kvarh').withDescription('Total reactive energy; import-export sum L3').build())
-                .build()
-        ]);
+        // meter.add('meter/state', 'The state of the electricity meter', [
+        //     Param.enum('state', { 0: 'NO_METER_CONNECTED', 1: 'METER_UNRELIABLE', 2: 'METER_CONNECTED' }).onlyModelPro().onlyWarp1().withDescription('The state of the electricity meter').build(),
+        //     Param.numb('power', 'W').onlyModelPro().withDescription('The current charging power').build(),
+        //     Param.numb('energy_rel', 'kWh').onlyModelPro().withDescription('The charged energy since the last reset').build(),
+        //     Param.numb('energy_abs', 'kWh').onlyModelPro().withDescription('The charged energy since the electricity meter was manufactured').build(),
+        //     Param.list('phases_active').onlyModelPro().onlyWarp2().withDescription('The currently active phases')
+        //         .item(Param.bool('l1').withDescription('L1 phase active').build())
+        //         .item(Param.bool('l2').withDescription('L2 phase active').build())
+        //         .item(Param.bool('l3').withDescription('L3 phase active').build())
+        //         .build(),
+        //     Param.list('phases_connected').onlyModelPro().onlyWarp2().withDescription('The currently connected phases')
+        //         .item(Param.bool('l1').withDescription('L1 phase connected').build())
+        //         .item(Param.bool('l2').withDescription('L2 phase connected').build())
+        //         .item(Param.bool('l3').withDescription('L3 phase connected').build())
+        //         .build()
+        // ]);
+        // meter.add('meter/error_counters', 'Error counter of the communication with the electricity meter', [
+        //     Param.numb('meter').onlyModelPro().onlyWarp1().withDescription('Communication error between RS485 Bricklet and electricity meter').build(),
+        //     Param.numb('bricklet').onlyModelPro().onlyWarp1().withDescription('Communication error between ESP Brick and RS485 Bricklet').build(),
+        //     Param.numb('bricklet_reset').onlyModelPro().onlyWarp1().withDescription('Unexpected resets of the RS485 Bricklet').build(),
+        // ]);
+        // meter.add('meter/detailed_values', 'All measured values measured by the built-in electricity meter', [
+        //     Param.list('detailed_values').onlyModelPro()
+        //         .item(Param.numb('voltage_against_neutral_l1', 'V').withDescription('Voltage against neutral L1').build())
+        //         .item(Param.numb('voltage_against_neutral_l2', 'V').withDescription('Voltage against neutral L2').build())
+        //         .item(Param.numb('voltage_against_neutral_l3', 'V').withDescription('Voltage against neutral L3').build())
+        //         .item(Param.numb('power_l1', 'A').withDescription('Power L1').build())
+        //         .item(Param.numb('power_l2', 'A').withDescription('Power L2').build())
+        //         .item(Param.numb('power_l3', 'A').withDescription('Power L3').build())
+        //         .item(Param.numb('active_power_l1', 'W').withDescription('Active power L1').build())
+        //         .item(Param.numb('active_power_l2', 'W').withDescription('Active power L2').build())
+        //         .item(Param.numb('active_power_l3', 'W').withDescription('Active power L3').build())
+        //         .item(Param.numb('apparent_power_l1', 'VA').withDescription('Apparent power L1').build())
+        //         .item(Param.numb('apparent_power_l2', 'VA').withDescription('Apparent power L2').build())
+        //         .item(Param.numb('apparent_power_l3', 'VA').withDescription('Apparent power L3').build())
+        //         .item(Param.numb('reactive_power_l1', 'var').withDescription('Reactive power L1').build())
+        //         .item(Param.numb('reactive_power_l2', 'var').withDescription('Reactive power L2').build())
+        //         .item(Param.numb('reactive_power_l3', 'var').withDescription('Reactive power L3').build())
+        //         .item(Param.numb('power_factor_l1').withDescription('Power factor L1; The sign of the power factor indicates the direction of the current flow').build())
+        //         .item(Param.numb('power_factor_l2').withDescription('Power factor L2; The sign of the power factor indicates the direction of the current flow').build())
+        //         .item(Param.numb('power_factor_l3').withDescription('Power factor L3; The sign of the power factor indicates the direction of the current flow').build())
+        //         .item(Param.numb('relative_phase_shift_l1', '°').withDescription('Relative phase shift L1').build())
+        //         .item(Param.numb('relative_phase_shift_l2', '°').withDescription('Relative phase shift L2').build())
+        //         .item(Param.numb('relative_phase_shift_l3', '°').withDescription('Relative phase shift L3').build())
+        //         .item(Param.numb('average_voltage_against_neutral', 'V').withDescription('Average voltage against neutral').build())
+        //         .item(Param.numb('average_power', 'A').withDescription('Average power').build())
+        //         .item(Param.numb('total_phase_currents', 'A').withDescription('Total phase currents').build())
+        //         .item(Param.numb('total_active_power', 'W').withDescription('Total active power').build())
+        //         .item(Param.numb('total_apparent_power', 'VA').withDescription('Total apparent power').build())
+        //         .item(Param.numb('total_reactive_power', 'var').withDescription('Total reactive power').build())
+        //         .item(Param.numb('total_power_factor').withDescription('Total power factor').build())
+        //         .item(Param.numb('total_relative_phase_shift', '°').withDescription('Total relative phase shift').build())
+        //         .item(Param.numb('frequency_of_the_supply_voltage', 'Hz').withDescription('Frequency of the supply voltage').build())
+        //         .item(Param.numb('active_energy_import', 'kWh').withDescription('Active energy (import; taken from the vehicle)').build())
+        //         .item(Param.numb('active_energy_export', 'kWh').withDescription('Active energy (export; delivered from the vehicle)').build())
+        //         .item(Param.numb('reactive_energy_import', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle)').build())
+        //         .item(Param.numb('reactive_energy_export', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle)').build())
+        //         .item(Param.numb('total_apparent_energy', 'kVAh').withDescription('Total apparent energy').build())
+        //         .item(Param.numb('transported_electric_charge', 'Ah').withDescription('Transported electric charge').build())
+        //         .item(Param.numb('used_active_power', 'W').withDescription('Used active power; corresponds to import-export difference').build())
+        //         .item(Param.numb('max_used_active_power', 'W').withDescription('Maximum used active power; highest measured value').build())
+        //         .item(Param.numb('used_apparent_power', 'VA').withDescription('Used apparent power; corresponds to import-export difference').build())
+        //         .item(Param.numb('max_used_apparent_power', 'VA').withDescription('Maximum used apparent power; highest measured value').build())
+        //         .item(Param.numb('used_neutral_conductor_power', 'A').withDescription('Used neutral conductor power').build())
+        //         .item(Param.numb('max_used_neutral_conductor_power', 'A').withDescription('Maximum used neutral conductor power; highest measured value').build())
+        //         .item(Param.numb('voltage_l1_to_l2', 'V').withDescription('Voltage L1 to L2').build())
+        //         .item(Param.numb('voltage_l2_to_l3', 'V').withDescription('Voltage L2 to L3').build())
+        //         .item(Param.numb('voltage_l3_to_l1', 'V').withDescription('Voltage L3 to L1').build())
+        //         .item(Param.numb('average_voltage_between_phases', 'V').withDescription('Average voltage between phases').build())
+        //         .item(Param.numb('neutral_conductor_power', 'A').withDescription('Neutral conductor power').build())
+        //         .item(Param.numb('thd_voltage_l1', '%').withDescription('Total harmonic distortion (THD) of voltage L1').build())
+        //         .item(Param.numb('thd_voltage_l2', '%').withDescription('Total harmonic distortion (THD) of voltage L2').build())
+        //         .item(Param.numb('thd_voltage_l3', '%').withDescription('Total harmonic distortion (THD) of voltage L3').build())
+        //         .item(Param.numb('thd_power_l1', '%').withDescription('Total harmonic distortion (THD) of power L1').build())
+        //         .item(Param.numb('thd_power_l2', '%').withDescription('Total harmonic distortion (THD) of power L2').build())
+        //         .item(Param.numb('thd_power_l3', '%').withDescription('Total harmonic distortion (THD) of power L3').build())
+        //         .item(Param.numb('thd_voltage', '%').withDescription('Total harmonic distortion (THD) of voltage').build())
+        //         .item(Param.numb('thd_power', '%').withDescription('Total harmonic distortion (THD) of power').build())
+        //         .item(Param.numb('used_power_l1', 'A').withDescription('Used power L1').build())
+        //         .item(Param.numb('used_power_l2', 'A').withDescription('Used power L2').build())
+        //         .item(Param.numb('used_power_l3', 'A').withDescription('Used power L3').build())
+        //         .item(Param.numb('max_used_power_l1', 'A').withDescription('Maximum used power L1; highest measured value').build())
+        //         .item(Param.numb('max_used_power_l2', 'A').withDescription('Maximum used power L2; highest measured value').build())
+        //         .item(Param.numb('max_used_power_l3', 'A').withDescription('Maximum used power L3; highest measured value').build())
+        //         .item(Param.numb('thd_voltage_l1_to_l2', '%').withDescription('THD voltage L1 to L2').build())
+        //         .item(Param.numb('thd_voltage_l2_to_l3', '%').withDescription('THD voltage L2 to L3').build())
+        //         .item(Param.numb('thd_voltage_l3_to_l1', '%').withDescription('THD voltage L3 to L1').build())
+        //         .item(Param.numb('average_thd_voltage_between_phases', '%').withDescription('Average THD voltage between phases').build())
+        //         .item(Param.numb('total_active_energy', 'kWh').withDescription('Total active energy; import-export sum of all phases').build())
+        //         .item(Param.numb('total_reactive_energy', 'kvarh').withDescription('Total reactive energy; import-export sum of all phases').build())
+        //         .item(Param.numb('active_energy_import_l1', 'kWh').withDescription('Active energy (import; taken from the vehicle) L1').build())
+        //         .item(Param.numb('active_energy_import_l2', 'kWh').withDescription('Active energy (import; taken from the vehicle) L2').build())
+        //         .item(Param.numb('active_energy_import_l3', 'kWh').withDescription('Active energy (import; taken from the vehicle) L3').build())
+        //         .item(Param.numb('active_energy_export_l1', 'kWh').withDescription('Active energy (export; delivered from the vehicle) L1').build())
+        //         .item(Param.numb('active_energy_export_l2', 'kWh').withDescription('Active energy (export; delivered from the vehicle) L2').build())
+        //         .item(Param.numb('active_energy_export_l3', 'kWh').withDescription('Active energy (export; delivered from the vehicle) L3').build())
+        //         .item(Param.numb('total_active_energy_export_l1', 'kWh').withDescription('Total active energy; import-export sum L1').build())
+        //         .item(Param.numb('total_active_energy_export_l2', 'kWh').withDescription('Total active energy; import-export sum L2').build())
+        //         .item(Param.numb('total_active_energy_export_l3', 'kWh').withDescription('Total active energy; import-export sum L3').build())
+        //         .item(Param.numb('reactive_energy_import_l1', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle) L1').build())
+        //         .item(Param.numb('reactive_energy_import_l2', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle) L2').build())
+        //         .item(Param.numb('reactive_energy_import_l3', 'kvarh').withDescription('Reactive energy (import; taken from the vehicle) L3').build())
+        //         .item(Param.numb('reactive_energy_export_l1', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle) L1').build())
+        //         .item(Param.numb('reactive_energy_export_l2', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle) L2').build())
+        //         .item(Param.numb('reactive_energy_export_l3', 'kvarh').withDescription('Reactive energy (export; delivered from the vehicle) L3').build())
+        //         .item(Param.numb('total_reactive_energy_l1', 'kvarh').withDescription('Total reactive energy; import-export sum L1').build())
+        //         .item(Param.numb('total_reactive_energy_l2', 'kvarh').withDescription('Total reactive energy; import-export sum L2').build())
+        //         .item(Param.numb('total_reactive_energy_l3', 'kvarh').withDescription('Total reactive energy; import-export sum L3').build())
+        //         .build()
+        // ]);
         meter.add('meter/reset', 'Resets the energy meter', [
             Param.butt('reset').withDescription('Resets the energy meter').actionSendCommand('meter/reset', 'PUT').build(),
         ]);
