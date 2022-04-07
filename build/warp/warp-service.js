@@ -132,9 +132,14 @@ class WarpService {
         const sectionId = this.getSectionId(message);
         const state = message.payload[property];
         const parameter = parameters.find((param) => param.name === property);
-        if (parameter && parameter.type === "list" && (0, import_tools.isArray)(state) && ((_c = parameter.listItems) == null ? void 0 : _c.length) === (state == null ? void 0 : state.length)) {
-          for (let index = 0; index < parameter.listItems.length; index++) {
-            await this.setStateSafelyAsync(`${sectionId}.${parameter.name}.${parameter.listItems[index].name}`, state[index]);
+        if (parameter && parameter.type === "list") {
+          if ((0, import_tools.isArray)(state) && ((_c = parameter.listItems) == null ? void 0 : _c.length) === (state == null ? void 0 : state.length)) {
+            for (let index = 0; index < parameter.listItems.length; index++) {
+              await this.setStateSafelyAsync(`${sectionId}.${parameter.name}.${parameter.listItems[index].name}`, state[index]);
+            }
+          } else {
+            const id = `${sectionId}.${property}.payload`;
+            await this.setStateSafelyAsync(id, state);
           }
         } else {
           const id = `${sectionId}.${property}`;
