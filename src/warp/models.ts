@@ -21,7 +21,7 @@ export interface WarpMessage {
 
 export interface WarpMetaInformation {
     name: string;
-    product: WarpProduct;
+    product: string;
     displayType: string;
     firmwareVersion: string
     features: string[];
@@ -87,7 +87,7 @@ export class WarpApiParameter {
     public actionMethod?: 'PUT' | 'GET';
     public enumValues?: { [index: number]: string; };
     public unit?: string;
-    public listItems?: WarpApiParameter[];
+    public listType?: WarpApiParameterType;
     public min?: number;
     public max?: number;
     public buttonType?: WarpApiButtonType
@@ -158,10 +158,6 @@ export class WarpApiParameterBuilder {
         this._warpApiParameter.actionType = 'update-config';
         return this;
     }
-    item(param: WarpApiParameter): WarpApiParameterBuilder {
-        if (this._warpApiParameter.listItems) this._warpApiParameter.listItems.push(param);
-        return this;
-    }
     build(): WarpApiParameter {
         return this._warpApiParameter;
     }
@@ -182,9 +178,9 @@ export abstract class Param {
         enumParam.enumValues = enumValues;
         return new WarpApiParameterBuilder(enumParam);
     }
-    public static list(name: string): WarpApiParameterBuilder {
+    public static list(name: string, type: WarpApiParameterType): WarpApiParameterBuilder {
         const listParam = new WarpApiParameter(name, 'list');
-        listParam.listItems = [];
+        listParam.listType = type;
         return new WarpApiParameterBuilder(listParam);
     }
     public static numb(name: string, unit?: string, min?: number, max?: number): WarpApiParameterBuilder {
@@ -202,9 +198,4 @@ export abstract class Param {
         const textParam = new WarpApiParameter(name, 'text');
         return new WarpApiParameterBuilder(textParam);
     }
-}
-
-export interface WarpApiMigration {
-    deletedParameterIds: string[];
-    changedParameterIds: string[];
 }

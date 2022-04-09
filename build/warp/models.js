@@ -120,11 +120,6 @@ class WarpApiParameterBuilder {
     this._warpApiParameter.actionType = "update-config";
     return this;
   }
-  item(param) {
-    if (this._warpApiParameter.listItems)
-      this._warpApiParameter.listItems.push(param);
-    return this;
-  }
   build() {
     return this._warpApiParameter;
   }
@@ -144,9 +139,9 @@ class Param {
     enumParam.enumValues = enumValues;
     return new WarpApiParameterBuilder(enumParam);
   }
-  static list(name) {
+  static list(name, type) {
     const listParam = new WarpApiParameter(name, "list");
-    listParam.listItems = [];
+    listParam.listType = type;
     return new WarpApiParameterBuilder(listParam);
   }
   static numb(name, unit, min, max) {

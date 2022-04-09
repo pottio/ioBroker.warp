@@ -111,9 +111,8 @@
     "native": {
         "authEnabled": false,
         "ipOrHostname": "",
-        "model": "",
+        "listBreakdownEnabled": false,
         "password": "",
-        "product": "",
         "secureConnection": false,
         "user": ""
     },
