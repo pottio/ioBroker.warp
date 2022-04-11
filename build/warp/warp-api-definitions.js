@@ -26,7 +26,7 @@ class WarpApiDefinitions {
     this.deletedParameterIds = {
       "0.0.1": [],
       "0.0.2": ["esp"],
-      "0.1.0": ["info.version", "info.model", "info.product", "evse", "meter"]
+      "0.1.0": ["info.version", "info.model", "info.product", "evse", "meter", "nfc"]
     };
     this._definedSections = [];
     this.getAllSections = () => this._definedSections;
@@ -37,13 +37,16 @@ class WarpApiDefinitions {
     this._definedSections = [
       ...this.defineEvse().sections,
       ...this.defineMeter().sections,
-      ...this.defineNfc().sections,
       ...this.defineChargeManager().sections,
-      ...this.defineMqtt().sections,
+      ...this.defineUsers().sections,
+      ...this.defineChargeTracker().sections,
+      ...this.defineNfc().sections,
+      ...this.defineNetwork().sections,
       ...this.defineWifi().sections,
       ...this.defineEthernet().sections,
-      ...this.defineAuthentication().sections,
-      ...this.defineOthers()
+      ...this.defineNtp().sections,
+      ...this.defineMqtt().sections,
+      ...this.defineInfo().sections
     ];
   }
   defineEvse() {
@@ -180,18 +183,6 @@ class WarpApiDefinitions {
     ]);
     return meter;
   }
-  defineNfc() {
-    const nfc = new import_models.WarpApi("nfc", "NFC charging release");
-    nfc.add("nfc/seen_tags", "The last NFC tags seen by the wallbox", [
-      import_models.Param.json("last_seen_tags").onlyWarp2().withDescription("List of last seen NFC tags with tag type, tag id and milliseconds since last seen").build()
-    ]);
-    nfc.add("nfc/config", "The NFC configuration", [
-      import_models.Param.bool("require_tag_to_start").onlyWarp2().withDescription("Indicates whether a NFC tag is needed to start a charge.").actionUpdateConfig("nfc/config_update").build(),
-      import_models.Param.bool("require_tag_to_stop").onlyWarp2().withDescription("Indicates whether a NFC tag is needed to stop a charge.").actionUpdateConfig("nfc/config_update").build(),
-      import_models.Param.json("authorized_tags").onlyWarp2().withDescription("A list of authorized NFC tags.").actionUpdateConfig("nfc/config_update").build()
-    ]);
-    return nfc;
-  }
   defineChargeManager() {
     const chargeManager = new import_models.WarpApi("charge_manager", "Charge manager");
     chargeManager.add("charge_manager/available_current", "The currently available power. This electricity is divided among the configured wallboxes", [
@@ -209,26 +200,69 @@ class WarpApiDefinitions {
       import_models.Param.numb("default_available_current", "mA").withDescription("Power to be available after restarting the charge manager").actionUpdateConfig("charge_manager/config_update").build(),
       import_models.Param.numb("maximum_available_current", "mA").withDescription("Maximum that may be set as available current via the API and the web interface. Should be configured to the maximum permitted power of the connection of the wallbox network, which is limited e.g. by the house connection, the fuse protection or the supply line").actionUpdateConfig("charge_manager/config_update").build(),
       import_models.Param.numb("minimum_current", "mA").withDescription("Smallest amount of power to be allocated to a wallbox so that it starts a charging process. This can be used to influence how many wallboxes charge at the same time").actionUpdateConfig("charge_manager/config_update").build(),
-      import_models.Param.json("chargers").withDescription("List of wallboxes that are to be controlled by the charge manager").actionUpdateConfig("charge_manager/config_update").build()
+      import_models.Param.list("chargers", "json").withDescription("List of wallboxes that are to be controlled by the charge manager").actionUpdateConfig("charge_manager/config_update").build()
     ]);
     return chargeManager;
   }
-  defineMqtt() {
-    const mqtt = new import_models.WarpApi("mqtt", "MQTT connection");
-    mqtt.add("mqtt/state", "The currently state of MQTT", [
-      import_models.Param.enum("connection_state", { 0: "NOT_CONFIGURED", 1: "NOT_CONNECTED", 2: "CONNECTED", 3: "ERROR" }).withDescription("State of the connection to the MQTT broker").build(),
-      import_models.Param.numb("last_error").withDescription("The last error that occurred. -1 if no error has occurred").build()
+  defineUsers() {
+    const users = new import_models.WarpApi("users", "User management");
+    users.add("users/config", "User configuration", [
+      import_models.Param.list("users", "json").withDescription("Users").build(),
+      import_models.Param.numb("next_user_id").withDescription("ID of the next user to be created").build(),
+      import_models.Param.bool("http_auth_enabled").withDescription("Specifies whether access data should be required to use the web interface and HTTP API").actionUpdateValue("users/http_auth_update", `{ "enabled": # }`).build()
     ]);
-    mqtt.add("mqtt/config", "The MQTT configuration", [
-      import_models.Param.bool("enable_mqtt").withDescription("Indicates whether an MQTT connection to the configured broker should be established").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("broker_host").withDescription("Host name or IP address of the MQTT broker to which the wallbox is to connect").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.numb("broker_port").withDescription("Port of the MQTT broker to which the wallbox should connect. Typically 1883").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("broker_username").withDescription("User name with which to connect to the broker. Empty if no authentication is used").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("broker_password").withDescription("Password with which to connect to the broker. Empty if no authentication is used").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("global_topic_prefix").withDescription("Prefix that precedes all MQTT topics").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("client_name").withDescription("Name under which the wallbox registers with the broker").actionUpdateConfig("mqtt/config_update").build()
+    users.add("users/edit", "Create, update and delete users", [
+      import_models.Param.json("create").withDescription("Creates the given user").noRead().actionSendJson("users/add").build(),
+      import_models.Param.json("delete").withDescription("Deletes the user with given id").noRead().actionUpdateValue("users/remove", `{ "id": # }`).build(),
+      import_models.Param.json("update").withDescription("Updates the given user").noRead().actionSendJson("users/modify").build()
     ]);
-    return mqtt;
+    return users;
+  }
+  defineChargeTracker() {
+    const chargeTracker = new import_models.WarpApi("charge_tracker", "Charge Tracker");
+    chargeTracker.add("charge_tracker/state", "State of the charge tracker", [
+      import_models.Param.numb("tracked_charges").withDescription("Total number of charges recorded").build(),
+      import_models.Param.numb("first_charge_timestamp", "min").withDescription("A Unix timestamp in minutes that indicates the start time of the first load").build()
+    ]);
+    chargeTracker.add("charge_tracker/last_charges", "The last recorded charges", [
+      import_models.Param.list("last_charges", "json").withDescription("The last (up to) 30 recorded charges").build()
+    ]);
+    chargeTracker.add("charge_tracker/current_charge", "Information on the currently running charging process", [
+      import_models.Param.numb("user_id").withDescription("ID of the user who started the charging process").build(),
+      import_models.Param.numb("meter_start", "kWh").withDescription("Counter reading at the start of charging").build(),
+      import_models.Param.numb("evse_uptime_start", "s").withDescription("Uptime of the charge controller at the start of charging").build(),
+      import_models.Param.numb("timestamp_minutes", "min").withDescription("A Unix timestamp in minutes indicating the start time of the charging process").build(),
+      import_models.Param.enum("authorization_type", { 0: "USER_RELEASE_DISABLED", 1: "TYPE_LOST", 2: "NFC_RELEASE", 3: "NFC_INJECT_RELEASE" }).withDescription("Indicates how the charging process was released").build(),
+      import_models.Param.json("authorization_info").withDescription("Further information on user sharing").build()
+    ]);
+    chargeTracker.add("charge_tracker/remove_all_charges", "Deletes all recorded charges and user name history", [
+      import_models.Param.butt("remove_all").withDescription("Caution - cannot be undone! A restart is then carried out automatically").actionUpdateValue("charge_tracker/remove_all_charges", `{ "do_i_know_what_i_am_doing": true }`).build()
+    ]);
+    chargeTracker.add("charge_tracker/charge_log", "Outputs all recorded charges in the following binary format", [
+      import_models.Param.list("charge_log", "number").withDescription("Charge log").build()
+    ]);
+    return chargeTracker;
+  }
+  defineNfc() {
+    const nfc = new import_models.WarpApi("nfc", "NFC charging release");
+    nfc.add("nfc/seen_tags", "The last NFC tags seen by the wallbox", [
+      import_models.Param.list("last_seen_tags", "json").withDescription("List of last seen NFC tags with tag type, tag id and milliseconds since last seen").build()
+    ]);
+    nfc.add("nfc/inject_tag", "Pretends that a tag has been recognised by the NFC reader", [
+      import_models.Param.json("tag").withDescription("Injects the given tag").noRead().actionSendJson("nfc/inject_tag").build()
+    ]);
+    nfc.add("nfc/config", "The NFC configuration", [
+      import_models.Param.json("authorized_tags").withDescription("A list of authorized NFC tags.").actionUpdateConfig("nfc/config_update").build()
+    ]);
+    return nfc;
+  }
+  defineNetwork() {
+    const network = new import_models.WarpApi("network", "network configuration");
+    network.add("network/config", "General network settings", [
+      import_models.Param.text("hostname").withDescription("Host name that the wallbox should use in all configured networks").build(),
+      import_models.Param.bool("enable_mdns").withDescription("Specifies whether the wallbox should announce the web interface via mDNS in the network").build()
+    ]);
+    return network;
   }
   defineWifi() {
     const wifi = new import_models.WarpApi("wifi", "WLAN configuration");
@@ -268,6 +302,9 @@ class WarpApiDefinitions {
       import_models.Param.json("gateway").withDescription("Gateway address that the wallbox should use in the configured network").actionUpdateConfig("wifi/ap_config_update").build(),
       import_models.Param.json("subnet").withDescription("Subnet mask that the wallbox should use in the configured network").actionUpdateConfig("wifi/ap_config_update").build()
     ]);
+    wifi.add("wifi/scan_results", "The WLANs found as a result of a search triggered by wifi.scan", [
+      import_models.Param.list("scan_results", "json").withDescription("The WLANs found as a result of a search triggered by wifi.scan").build()
+    ]);
     return wifi;
   }
   defineEthernet() {
@@ -289,38 +326,56 @@ class WarpApiDefinitions {
     ]);
     return ethernet;
   }
-  defineAuthentication() {
-    const authentication = new import_models.WarpApi("authentication", "Authentication configuration");
-    authentication.add("authentication/config", "The authentication configuration", [
-      import_models.Param.bool("enable_auth").withDescription("Specifies whether credentials should be required").build(),
-      import_models.Param.text("username").withDescription("The username").build(),
-      import_models.Param.text("password").withDescription("The password").build()
+  defineNtp() {
+    const ntp = new import_models.WarpApi("ntp", "Time synchronization");
+    ntp.add("ntp/state", "The state of the time synchronization", [
+      import_models.Param.bool("synced").withDescription("Indicates whether the wallbox was able to synchronise its time via NTP").build()
     ]);
-    return authentication;
+    ntp.add("ntp/config", "The NTP configuration", [
+      import_models.Param.bool("enable").withDescription("Specifies whether the wallbox should synchronise its time via NTP").build(),
+      import_models.Param.bool("use_dhcp").withDescription("Specifies whether the wallbox should synchronise its time via DHCP").build(),
+      import_models.Param.text("timezone").withDescription("The time zone in which the wallbox is located").build(),
+      import_models.Param.text("server").withDescription("IP address or host name of the time server to be used").build(),
+      import_models.Param.text("server2").withDescription("IP address or host name of the alternative time server").build()
+    ]);
+    return ntp;
   }
-  defineOthers() {
-    const version = new import_models.WarpApi("version", "", true);
-    version.add("version", "Version of the wallbox firmware", [
+  defineMqtt() {
+    const mqtt = new import_models.WarpApi("mqtt", "MQTT connection");
+    mqtt.add("mqtt/state", "The currently state of MQTT", [
+      import_models.Param.enum("connection_state", { 0: "NOT_CONFIGURED", 1: "NOT_CONNECTED", 2: "CONNECTED", 3: "ERROR" }).withDescription("State of the connection to the MQTT broker").build(),
+      import_models.Param.numb("last_error").withDescription("The last error that occurred. -1 if no error has occurred").build()
+    ]);
+    mqtt.add("mqtt/config", "The MQTT configuration", [
+      import_models.Param.bool("enable_mqtt").withDescription("Indicates whether an MQTT connection to the configured broker should be established").actionUpdateConfig("mqtt/config_update").build(),
+      import_models.Param.text("broker_host").withDescription("Host name or IP address of the MQTT broker to which the wallbox is to connect").actionUpdateConfig("mqtt/config_update").build(),
+      import_models.Param.numb("broker_port").withDescription("Port of the MQTT broker to which the wallbox should connect. Typically 1883").actionUpdateConfig("mqtt/config_update").build(),
+      import_models.Param.text("broker_username").withDescription("User name with which to connect to the broker. Empty if no authentication is used").actionUpdateConfig("mqtt/config_update").build(),
+      import_models.Param.text("broker_password").withDescription("Password with which to connect to the broker. Empty if no authentication is used").actionUpdateConfig("mqtt/config_update").build(),
+      import_models.Param.text("global_topic_prefix").withDescription("Prefix that precedes all MQTT topics").actionUpdateConfig("mqtt/config_update").build(),
+      import_models.Param.text("client_name").withDescription("Name under which the wallbox registers with the broker").actionUpdateConfig("mqtt/config_update").build(),
+      import_models.Param.numb("interval", "s").withDescription("Minimum transmission interval per topic in seconds").actionUpdateConfig("mqtt/config_update").build()
+    ]);
+    return mqtt;
+  }
+  defineInfo() {
+    const info = new import_models.WarpApi("info", "General information");
+    info.add("info/version", "Wallbox firmware version", [
       import_models.Param.text("firmware").withDescription("The firmware version that is currently running").build(),
-      import_models.Param.text("spiffs").withDescription("The version of the configuration that is currently being used").build()
+      import_models.Param.text("config").withDescription("The version of the configuration that is currently being used").build()
     ]);
-    const modules = new import_models.WarpApi("modules", "", true);
-    modules.add("modules", "Initialization status of the firmware modules", [
-      import_models.Param.bool("event_log").build(),
-      import_models.Param.bool("esp32_brick").build(),
-      import_models.Param.bool("wifi").build(),
-      import_models.Param.bool("mqtt").build(),
-      import_models.Param.bool("http").build(),
-      import_models.Param.bool("ws").build(),
-      import_models.Param.bool("firmware_update").build(),
-      import_models.Param.bool("evse").build(),
-      import_models.Param.bool("sdm72dm").build(),
-      import_models.Param.bool("authentication").build(),
-      import_models.Param.bool("charge_manager").build(),
-      import_models.Param.bool("cm_networking").build(),
-      import_models.Param.bool("nfc").build()
+    info.add("info/modules", "Initialisation status of the firmware modules", []);
+    info.add("info/features", "Supported hardware features", []);
+    info.add("info/name", "Wallbox name and type", [
+      import_models.Param.text("name").withDescription("The name of the wallbox. Consists of the type and UID of the wallbox").build(),
+      import_models.Param.text("type").withDescription("Wallbox type").build(),
+      import_models.Param.text("display_type").withDescription("User-readable type of wallbox").build(),
+      import_models.Param.text("uid").withDescription("Wallbox/ESP UID").build()
     ]);
-    return [...version.sections, ...modules.sections];
+    info.add("info/display_name", "User-readable name of the wallbox", [
+      import_models.Param.text("display_name").withDescription("Display name").actionUpdateValue("info/display_name_update", `{ "display_name": # }`).build()
+    ]);
+    return info;
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

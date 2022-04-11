@@ -103,6 +103,9 @@ export class WarpService {
                     payload += '}';
                     resolve(JSON.parse(payload));
                     break;
+                case 'send-json':
+                    resolve(JSON.parse(`${state.val}`));
+                    break;
                 default:
                     this._log.warn(`Api parameter action type '${parameter.actionType}' is unknown.`);
                     resolve(undefined);
@@ -219,7 +222,7 @@ export class WarpService {
 
     private async createObjectsForParameterAndSubscribeActionAsync(section: WarpApiSection, parameter: WarpApiParameter, sectionId?: string): Promise<void> {
         const parameterId = `${sectionId ? sectionId : section.id}.${parameter.name}`;
-        let obj: ioBroker.SettableObject = { type: 'state', common: { name: parameter.description, role: '', read: true, write: parameter.hasAction() }, native: {} };
+        let obj: ioBroker.SettableObject = { type: 'state', common: { name: parameter.description, role: '', read: parameter.read, write: parameter.hasAction() }, native: {} };
         switch (parameter.type) {
             case 'list':
                 // TODO other state type

@@ -111,6 +111,9 @@ class WarpService {
           payload += "}";
           resolve(JSON.parse(payload));
           break;
+        case "send-json":
+          resolve(JSON.parse(`${state.val}`));
+          break;
         default:
           this._log.warn(`Api parameter action type '${parameter.actionType}' is unknown.`);
           resolve(void 0);
@@ -191,7 +194,7 @@ class WarpService {
   }
   async createObjectsForParameterAndSubscribeActionAsync(section, parameter, sectionId) {
     const parameterId = `${sectionId ? sectionId : section.id}.${parameter.name}`;
-    let obj = { type: "state", common: { name: parameter.description, role: "", read: true, write: parameter.hasAction() }, native: {} };
+    let obj = { type: "state", common: { name: parameter.description, role: "", read: parameter.read, write: parameter.hasAction() }, native: {} };
     switch (parameter.type) {
       case "list":
         obj = { type: "channel", common: { name: parameter.description }, native: {} };

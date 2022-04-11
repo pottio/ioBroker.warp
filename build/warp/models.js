@@ -74,6 +74,7 @@ class WarpApiParameter {
     this.name = name;
     this.description = "";
     this.type = type;
+    this.read = true;
     this.relevantForProducts = WarpProduct.all;
   }
   isRelevantFor(product) {
@@ -118,6 +119,16 @@ class WarpApiParameterBuilder {
   actionUpdateConfig(topic) {
     this._warpApiParameter.actionTopic = topic;
     this._warpApiParameter.actionType = "update-config";
+    return this;
+  }
+  actionSendJson(topic) {
+    this._warpApiParameter.actionTopic = topic;
+    this._warpApiParameter.actionType = "send-json";
+    this._warpApiParameter.actionMethod = "PUT";
+    return this;
+  }
+  noRead() {
+    this._warpApiParameter.read = false;
     return this;
   }
   build() {

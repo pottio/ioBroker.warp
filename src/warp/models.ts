@@ -1,6 +1,6 @@
 
 export type WarpApiParameterType = 'enum' | 'number' | 'bool' | 'list' | 'button' | 'json' | 'text';
-export type WarpApiActionType = 'update-value' | 'update-config' | 'send-command';
+export type WarpApiActionType = 'update-value' | 'update-config' | 'send-command' | 'send-json';
 export type WarpApiButtonType = 'normal' | 'start' | 'stop';
 export abstract class WarpProduct {
     public static readonly warp1: string = 'warp1';
@@ -90,12 +90,14 @@ export class WarpApiParameter {
     public listType?: WarpApiParameterType;
     public min?: number;
     public max?: number;
-    public buttonType?: WarpApiButtonType
+    public buttonType?: WarpApiButtonType;
+    public read: boolean;
 
     constructor(name: string, type: WarpApiParameterType) {
         this.name = name;
         this.description = '';
         this.type = type;
+        this.read = true;
         //this.relevantForModels = WarpModel.all;
         this.relevantForProducts = WarpProduct.all;
     }
@@ -156,6 +158,16 @@ export class WarpApiParameterBuilder {
     actionUpdateConfig(topic: string): WarpApiParameterBuilder {
         this._warpApiParameter.actionTopic = topic;
         this._warpApiParameter.actionType = 'update-config';
+        return this;
+    }
+    actionSendJson(topic: string): WarpApiParameterBuilder {
+        this._warpApiParameter.actionTopic = topic;
+        this._warpApiParameter.actionType = 'send-json';
+        this._warpApiParameter.actionMethod = 'PUT';
+        return this;
+    }
+    noRead(): WarpApiParameterBuilder {
+        this._warpApiParameter.read = false;
         return this;
     }
     build(): WarpApiParameter {
