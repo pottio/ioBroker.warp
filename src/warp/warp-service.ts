@@ -153,6 +153,7 @@ export class WarpService {
             const ms = Date.now() - this._startInitTimestamp;
             const seconds = Math.floor(ms / 1000);
             this._objectsInitPeriodIsActive = seconds < this._objectInitPeriodInSeconds;
+            if (!this._objectsInitPeriodIsActive) this._log.info(`Object init period ended`);
         }
     }
 

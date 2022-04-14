@@ -75,6 +75,8 @@
     "check": "tsc --noEmit",
     "lint": "eslint --ext .ts src/",
     "translate": "translate-adapter",
+    "translate-to-json": "translate-adapter to-json",
+    "translate-to-words": "translate-adapter to-words",
     "release": "release-script"
   },
   "bugs": {

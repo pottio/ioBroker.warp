@@ -125,23 +125,23 @@ class WarpApiDefinitions {
       import_models.Param.bool("clear_on_disconnect").withDescription("Indicates whether the charging current of this slot is set to 0 when a vehicle is unplugged").actionUpdateConfig("evse/external_defaults_update").build()
     ]);
     evse.add("evse/gpio_configuration", "The configuration of the configurable inputs and outputs", [
-      import_models.Param.enum("shutdown_input", { 0: "NOT_CONFIGURED", 1: "TURN_OFF_WHEN_OPENED", 2: "TURN_OFF_WHEN_CLOSED" }).onlyWarp2().withDescription("The configuration of the switch-off input").actionUpdateConfig("evse/gpio_configuration_update").build(),
-      import_models.Param.enum("input", { 0: "NOT_CONFIGURED" }).onlyWarp2().withDescription("The configuration of the configurable input").actionUpdateConfig("evse/gpio_configuration_update").build(),
-      import_models.Param.enum("output", { 0: "CONNECTED_TO_GROUND", 1: "HIGH_IMPEDANCE" }).onlyWarp2().withDescription("The configuration of the configurable output").actionUpdateConfig("evse/gpio_configuration_update").build()
+      import_models.Param.enum("shutdown_input", { 0: "NOT_CONFIGURED", 1: "TURN_OFF_WHEN_OPENED", 2: "TURN_OFF_WHEN_CLOSED" }).onlyWarp2().withDescription("The configuration of the switch-off input").build(),
+      import_models.Param.enum("input", { 0: "NOT_CONFIGURED" }).onlyWarp2().withDescription("The configuration of the configurable input").build(),
+      import_models.Param.enum("output", { 0: "CONNECTED_TO_GROUND", 1: "HIGH_IMPEDANCE" }).onlyWarp2().withDescription("The configuration of the configurable output").build()
     ]);
     evse.add("evse/button_configuration", "The configuration of the button in the front panel", [
       import_models.Param.enum("button", { 0: "DEACTIVATED", 1: "CHARGE_START_WHEN_PRESSED", 2: "CHARGE_STOP_WHEN_PRESSED", 3: "CHARGE_TOGGLE_WHEN_PRESSED" }).onlyWarp2().withDescription("The configuration of the button in the front panel").actionUpdateConfig("evse/button_configuration_update").build()
     ]);
     evse.add("evse/user_calibration", "Allows the factory calibration of the EVSE to be read and overwritten", [
-      import_models.Param.bool("user_calibration_active").onlyWarp1().withDescription("Indicates whether the factory calibration has been overwritten").actionUpdateConfig("evse/user_calibration_update").build(),
-      import_models.Param.numb("voltage_diff").onlyWarp1().withDescription("One of the calibration parameters").actionUpdateConfig("evse/user_calibration_update").build(),
-      import_models.Param.numb("voltage_mul").onlyWarp1().withDescription("One of the calibration parameters").actionUpdateConfig("evse/user_calibration_update").build(),
-      import_models.Param.numb("voltage_div").onlyWarp1().withDescription("One of the calibration parameters").actionUpdateConfig("evse/user_calibration_update").build(),
-      import_models.Param.numb("resistance_2700").onlyWarp1().withDescription("One of the calibration parameters").actionUpdateConfig("evse/user_calibration_update").build(),
-      import_models.Param.json("resistance_880").onlyWarp1().withDescription("One of the calibration parameters").actionUpdateConfig("evse/user_calibration_update").build()
+      import_models.Param.bool("user_calibration_active").onlyWarp1().withDescription("Indicates whether the factory calibration has been overwritten").build(),
+      import_models.Param.numb("voltage_diff").onlyWarp1().withDescription("One of the calibration parameters").build(),
+      import_models.Param.numb("voltage_mul").onlyWarp1().withDescription("One of the calibration parameters").build(),
+      import_models.Param.numb("voltage_div").onlyWarp1().withDescription("One of the calibration parameters").build(),
+      import_models.Param.numb("resistance_2700").onlyWarp1().withDescription("One of the calibration parameters").build(),
+      import_models.Param.json("resistance_880").onlyWarp1().withDescription("One of the calibration parameters").build()
     ]);
     evse.add("evse/reset_dc_fault_current_state", "The state of the DC fault current protection module. If a DC fault occurs, charging is no longer possible until the protection module has been reset. Before resetting, it is imperative that the reason for the fault is rectified!", [
-      import_models.Param.butt("reset_dc_fault_current_state", "normal").withDescription("Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!").actionSendCommand("evse/reset_dc_fault_current_state", "PUT", `{ "password": "0xDC42FA23" }`).build()
+      import_models.Param.butt("reset_dc_fault_current_state", "normal").withDescription("Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!").build()
     ]);
     evse.add("evse/manual_charging", "Allows to start and stop a charging process, when auto start charging is disabled.", [
       import_models.Param.butt("start_charging", "start").withDescription("Starts a charging process").actionSendCommand("evse/start_charging", "PUT").build(),
@@ -186,7 +186,7 @@ class WarpApiDefinitions {
   defineChargeManager() {
     const chargeManager = new import_models.WarpApi("charge_manager", "Charge manager");
     chargeManager.add("charge_manager/available_current", "The currently available power. This electricity is divided among the configured wallboxes", [
-      import_models.Param.numb("current", "mA").withDescription("The currently available power").actionUpdateValue("charge_manager/available_current_update", `{ "current": # }`).build()
+      import_models.Param.numb("current", "mA").withDescription("The currently available power").build()
     ]);
     chargeManager.add("charge_manager/state", "The status of the charge manager and all configured wallboxes", [
       import_models.Param.enum("state", { 0: "UNCONFIGURED", 1: "ACTIVE", 2: "ERROR" }).withDescription("The currently state of the charge manager").build(),
@@ -194,13 +194,13 @@ class WarpApiDefinitions {
       import_models.Param.json("chargers").withDescription("List of configurated wallboxes").build()
     ]);
     chargeManager.add("charge_manager/config", "The charge manager configuration", [
-      import_models.Param.bool("enable_charge_manager").withDescription("Specifies whether the charge manager should be activated").actionUpdateConfig("charge_manager/config_update").build(),
-      import_models.Param.bool("enable_watchdog").withDescription("Specifies whether the watchdog should be activated").actionUpdateConfig("charge_manager/config_update").build(),
-      import_models.Param.bool("verbose").withDescription("Specifies whether each power distribution is to be noted in the event log").actionUpdateConfig("charge_manager/config_update").build(),
-      import_models.Param.numb("default_available_current", "mA").withDescription("Power to be available after restarting the charge manager").actionUpdateConfig("charge_manager/config_update").build(),
-      import_models.Param.numb("maximum_available_current", "mA").withDescription("Maximum that may be set as available current via the API and the web interface. Should be configured to the maximum permitted power of the connection of the wallbox network, which is limited e.g. by the house connection, the fuse protection or the supply line").actionUpdateConfig("charge_manager/config_update").build(),
-      import_models.Param.numb("minimum_current", "mA").withDescription("Smallest amount of power to be allocated to a wallbox so that it starts a charging process. This can be used to influence how many wallboxes charge at the same time").actionUpdateConfig("charge_manager/config_update").build(),
-      import_models.Param.list("chargers", "json").withDescription("List of wallboxes that are to be controlled by the charge manager").actionUpdateConfig("charge_manager/config_update").build()
+      import_models.Param.bool("enable_charge_manager").withDescription("Specifies whether the charge manager should be activated").build(),
+      import_models.Param.bool("enable_watchdog").withDescription("Specifies whether the watchdog should be activated").build(),
+      import_models.Param.bool("verbose").withDescription("Specifies whether each power distribution is to be noted in the event log").build(),
+      import_models.Param.numb("default_available_current", "mA").withDescription("Power to be available after restarting the charge manager").build(),
+      import_models.Param.numb("maximum_available_current", "mA").withDescription("Maximum that may be set as available current via the API and the web interface. Should be configured to the maximum permitted power of the connection of the wallbox network, which is limited e.g. by the house connection, the fuse protection or the supply line").build(),
+      import_models.Param.numb("minimum_current", "mA").withDescription("Smallest amount of power to be allocated to a wallbox so that it starts a charging process. This can be used to influence how many wallboxes charge at the same time").build(),
+      import_models.Param.list("chargers", "json").withDescription("List of wallboxes that are to be controlled by the charge manager").build()
     ]);
     return chargeManager;
   }
@@ -209,12 +209,7 @@ class WarpApiDefinitions {
     users.add("users/config", "User configuration", [
       import_models.Param.list("users", "json").withDescription("Users").build(),
       import_models.Param.numb("next_user_id").withDescription("ID of the next user to be created").build(),
-      import_models.Param.bool("http_auth_enabled").withDescription("Specifies whether access data should be required to use the web interface and HTTP API").actionUpdateValue("users/http_auth_update", `{ "enabled": # }`).build()
-    ]);
-    users.add("users/edit", "Create, update and delete users", [
-      import_models.Param.json("create").withDescription("Creates the given user").noRead().actionSendJson("users/add").build(),
-      import_models.Param.json("delete").withDescription("Deletes the user with given id").noRead().actionUpdateValue("users/remove", `{ "id": # }`).build(),
-      import_models.Param.json("update").withDescription("Updates the given user").noRead().actionSendJson("users/modify").build()
+      import_models.Param.bool("http_auth_enabled").withDescription("Specifies whether access data should be required to use the web interface and HTTP API").build()
     ]);
     return users;
   }
@@ -252,7 +247,7 @@ class WarpApiDefinitions {
       import_models.Param.json("tag").withDescription("Injects the given tag").noRead().actionSendJson("nfc/inject_tag").build()
     ]);
     nfc.add("nfc/config", "The NFC configuration", [
-      import_models.Param.json("authorized_tags").withDescription("A list of authorized NFC tags.").actionUpdateConfig("nfc/config_update").build()
+      import_models.Param.json("authorized_tags").withDescription("A list of authorized NFC tags.").build()
     ]);
     return nfc;
   }
@@ -278,29 +273,29 @@ class WarpApiDefinitions {
       import_models.Param.butt("scan").withDescription("Triggers a scan for WLANs").actionSendCommand("wifi/scan", "PUT").build()
     ]);
     wifi.add("wifi/sta_config", "The WLAN connection configuration", [
-      import_models.Param.bool("enable_sta").withDescription("Indicates whether a WLAN connection to the configured network should be established").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.text("ssid").withDescription("SSID to which you want to connect").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.json("bssid").withDescription("BSSID to be connected to").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.bool("bssid_lock").withDescription("Defines whether only the WLAN with the set BSSID is to be connected to. Leave disabled if repeaters or similar are to be used").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.text("passphrase").withDescription("The WLAN passphrase. Maximum 63 bytes").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.text("hostname").withDescription("Host name that the wallbox should use in the configured network").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.json("ip").withDescription("IP address that the wallbox should use in the configured network").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.json("gateway").withDescription("Gateway address that the wallbox should use in the configured network").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.json("subnet").withDescription("Subnet mask that the wallbox should use in the configured network").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.json("dns").withDescription("DNS server address that the wallbox should use in the configured network").actionUpdateConfig("wifi/sta_config_update").build(),
-      import_models.Param.json("dns2").withDescription("Alternative DNS server address that the wallbox should use in the configured network").actionUpdateConfig("wifi/sta_config_update").build()
+      import_models.Param.bool("enable_sta").withDescription("Indicates whether a WLAN connection to the configured network should be established").build(),
+      import_models.Param.text("ssid").withDescription("SSID to which you want to connect").build(),
+      import_models.Param.json("bssid").withDescription("BSSID to be connected to").build(),
+      import_models.Param.bool("bssid_lock").withDescription("Defines whether only the WLAN with the set BSSID is to be connected to. Leave disabled if repeaters or similar are to be used").build(),
+      import_models.Param.text("passphrase").withDescription("The WLAN passphrase. Maximum 63 bytes").build(),
+      import_models.Param.text("hostname").withDescription("Host name that the wallbox should use in the configured network").build(),
+      import_models.Param.json("ip").withDescription("IP address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("gateway").withDescription("Gateway address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("subnet").withDescription("Subnet mask that the wallbox should use in the configured network").build(),
+      import_models.Param.json("dns").withDescription("DNS server address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("dns2").withDescription("Alternative DNS server address that the wallbox should use in the configured network").build()
     ]);
     wifi.add("wifi/ap_config", "The WLAN access point configuration", [
-      import_models.Param.bool("enable_ap").withDescription("Indicates whether the access point should be activated").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.bool("ap_fallback_only").withDescription("Specifies whether the access point should only be activated if the WLAN and LAN connections cannot be established").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.text("ssid").withDescription("SSID to which you want to connect").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.bool("hide_ssid").withDescription("True if the SSID is to be hidden, otherwise false").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.text("passphrase").withDescription("The WLAN passphrase. Maximum 63 byte").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.text("hostname").withDescription("Host name that the wallbox should use").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.numb("channel", void 0, 1, 13).withDescription("Channel on which the access point is to be accessible").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.json("ip").withDescription("IP address that the wallbox should use in the configured network").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.json("gateway").withDescription("Gateway address that the wallbox should use in the configured network").actionUpdateConfig("wifi/ap_config_update").build(),
-      import_models.Param.json("subnet").withDescription("Subnet mask that the wallbox should use in the configured network").actionUpdateConfig("wifi/ap_config_update").build()
+      import_models.Param.bool("enable_ap").withDescription("Indicates whether the access point should be activated").build(),
+      import_models.Param.bool("ap_fallback_only").withDescription("Specifies whether the access point should only be activated if the WLAN and LAN connections cannot be established").build(),
+      import_models.Param.text("ssid").withDescription("SSID to which you want to connect").build(),
+      import_models.Param.bool("hide_ssid").withDescription("True if the SSID is to be hidden, otherwise false").build(),
+      import_models.Param.text("passphrase").withDescription("The WLAN passphrase. Maximum 63 byte").build(),
+      import_models.Param.text("hostname").withDescription("Host name that the wallbox should use").build(),
+      import_models.Param.numb("channel", void 0, 1, 13).withDescription("Channel on which the access point is to be accessible").build(),
+      import_models.Param.json("ip").withDescription("IP address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("gateway").withDescription("Gateway address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("subnet").withDescription("Subnet mask that the wallbox should use in the configured network").build()
     ]);
     wifi.add("wifi/scan_results", "The WLANs found as a result of a search triggered by wifi.scan", [
       import_models.Param.list("scan_results", "json").withDescription("The WLANs found as a result of a search triggered by wifi.scan").build()
@@ -316,13 +311,13 @@ class WarpApiDefinitions {
       import_models.Param.numb("link_speed", "Mbit/s").withDescription("Negotiated connection speed").build()
     ]);
     ethernet.add("ethernet/sta_config", "The WLAN connection configuration", [
-      import_models.Param.bool("enable_ethernet").withDescription("Indicates whether a LAN connection to the configured network should be established").actionUpdateConfig("ethernet/config_update").build(),
-      import_models.Param.text("hostname").withDescription("Host name that the wallbox should use in the configured network").actionUpdateConfig("ethernet/config_update").build(),
-      import_models.Param.json("ip").withDescription("IP address that the wallbox should use in the configured network").actionUpdateConfig("ethernet/config_update").build(),
-      import_models.Param.json("gateway").withDescription("Gateway address that the wallbox should use in the configured network").actionUpdateConfig("ethernet/config_update").build(),
-      import_models.Param.json("subnet").withDescription("Subnet mask that the wallbox should use in the configured network").actionUpdateConfig("ethernet/config_update").build(),
-      import_models.Param.json("dns").withDescription("DNS server address that the wallbox should use in the configured network").actionUpdateConfig("ethernet/config_update").build(),
-      import_models.Param.json("dns2").withDescription("Alternative DNS server address that the wallbox should use in the configured network").actionUpdateConfig("ethernet/config_update").build()
+      import_models.Param.bool("enable_ethernet").withDescription("Indicates whether a LAN connection to the configured network should be established").build(),
+      import_models.Param.text("hostname").withDescription("Host name that the wallbox should use in the configured network").build(),
+      import_models.Param.json("ip").withDescription("IP address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("gateway").withDescription("Gateway address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("subnet").withDescription("Subnet mask that the wallbox should use in the configured network").build(),
+      import_models.Param.json("dns").withDescription("DNS server address that the wallbox should use in the configured network").build(),
+      import_models.Param.json("dns2").withDescription("Alternative DNS server address that the wallbox should use in the configured network").build()
     ]);
     return ethernet;
   }
@@ -347,14 +342,14 @@ class WarpApiDefinitions {
       import_models.Param.numb("last_error").withDescription("The last error that occurred. -1 if no error has occurred").build()
     ]);
     mqtt.add("mqtt/config", "The MQTT configuration", [
-      import_models.Param.bool("enable_mqtt").withDescription("Indicates whether an MQTT connection to the configured broker should be established").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("broker_host").withDescription("Host name or IP address of the MQTT broker to which the wallbox is to connect").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.numb("broker_port").withDescription("Port of the MQTT broker to which the wallbox should connect. Typically 1883").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("broker_username").withDescription("User name with which to connect to the broker. Empty if no authentication is used").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("broker_password").withDescription("Password with which to connect to the broker. Empty if no authentication is used").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("global_topic_prefix").withDescription("Prefix that precedes all MQTT topics").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.text("client_name").withDescription("Name under which the wallbox registers with the broker").actionUpdateConfig("mqtt/config_update").build(),
-      import_models.Param.numb("interval", "s").withDescription("Minimum transmission interval per topic in seconds").actionUpdateConfig("mqtt/config_update").build()
+      import_models.Param.bool("enable_mqtt").withDescription("Indicates whether an MQTT connection to the configured broker should be established").build(),
+      import_models.Param.text("broker_host").withDescription("Host name or IP address of the MQTT broker to which the wallbox is to connect").build(),
+      import_models.Param.numb("broker_port").withDescription("Port of the MQTT broker to which the wallbox should connect. Typically 1883").build(),
+      import_models.Param.text("broker_username").withDescription("User name with which to connect to the broker. Empty if no authentication is used").build(),
+      import_models.Param.text("broker_password").withDescription("Password with which to connect to the broker. Empty if no authentication is used").build(),
+      import_models.Param.text("global_topic_prefix").withDescription("Prefix that precedes all MQTT topics").build(),
+      import_models.Param.text("client_name").withDescription("Name under which the wallbox registers with the broker").build(),
+      import_models.Param.numb("interval", "s").withDescription("Minimum transmission interval per topic in seconds").build()
     ]);
     return mqtt;
   }
