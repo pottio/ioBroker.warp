@@ -179,7 +179,7 @@ export class WarpApiDefinitions {
     public defineChargeManager(): WarpApi {
         const chargeManager = new WarpApi('charge_manager', 'Charge manager');
         chargeManager.add('charge_manager/available_current', 'The currently available power. This electricity is divided among the configured wallboxes', [
-            Param.numb('current', 'mA').withDescription('The currently available power').actionUpdateValue('charge_manager/available_current_update', `{ "current": # }`).build()
+            Param.numb('current', 'mA').withDescription('The currently available power').build()
         ]);
         chargeManager.add('charge_manager/state', 'The status of the charge manager and all configured wallboxes', [
             Param.enum('state', { 0: 'UNCONFIGURED', 1: 'ACTIVE', 2: 'ERROR' }).withDescription('The currently state of the charge manager').build(),
@@ -243,7 +243,7 @@ export class WarpApiDefinitions {
             Param.json('tag').withDescription('Injects the given tag').noRead().actionSendJson('nfc/inject_tag').build()
         ]);
         nfc.add('nfc/config', 'The NFC configuration', [
-            Param.json('authorized_tags').withDescription('A list of authorized NFC tags.').actionUpdateConfig('nfc/config_update').build(),
+            Param.json('authorized_tags').withDescription('A list of authorized NFC tags.').build(),
         ]);
         return nfc;
     }
