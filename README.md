@@ -33,7 +33,7 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.0 (2022-04-14)
 * (pottio) [Breaking Changes] Added support for WARP firmware >= 2.0.0 - older firmware versions are no longer supported
 * (pottio) Automatic WARP product and model detection on startup
 * (pottio) Split of array in single states is now configurable in admin settings

@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "warp",
-        "version": "0.0.4",
+        "version": "1.0.0",
         "news": {
+            "1.0.0": {
+                "en": "[Breaking Changes] Added support for WARP firmware >= 2.0.0 - older firmware versions are no longer supported\nAutomatic WARP product and model detection on startup\nSplit of array in single states is now configurable in admin settings\nDependency updates",
+                "de": "[Breaking Changes] Unterstützung für WARP-Firmware >= 2.0.0 hinzugefügt – ältere Firmware-Versionen werden nicht mehr unterstützt\nAutomatische WARP-Produkt- und Modellerkennung beim Start\nDie Aufteilung des Arrays in einzelne Zustände ist jetzt in den Admin-Einstellungen konfigurierbar\nAbhängigkeitsaktualisierungen",
+                "ru": "[Ключевые изменения] Добавлена поддержка прошивки WARP >= 2.0.0 — более старые версии прошивки больше не поддерживаются.\nАвтоматическое определение продукта и модели WARP при запуске\nРазделение массива в отдельных состояниях теперь настраивается в настройках администратора.\nОбновления зависимостей",
+                "pt": "[Mudanças importantes] Adicionado suporte para firmware WARP >= 2.0.0 - versões de firmware mais antigas não são mais suportadas\nDetecção automática de produto e modelo WARP na inicialização\nA divisão da matriz em estados únicos agora é configurável nas configurações de administrador\nAtualizações de dependência",
+                "nl": "[Breaking Changes] Ondersteuning toegevoegd voor WARP-firmware >= 2.0.0 - oudere firmwareversies worden niet langer ondersteund\nAutomatische WARP-product- en modeldetectie bij opstarten\nSplitsing van array in enkele toestanden is nu configureerbaar in beheerdersinstellingen\nAfhankelijkheidsupdates",
+                "fr": "[Modifications majeures] Ajout de la prise en charge du micrologiciel WARP >= 2.0.0 - les anciennes versions de micrologiciel ne sont plus prises en charge\nDétection automatique des produits et modèles WARP au démarrage\nLa division du tableau en états uniques est maintenant configurable dans les paramètres d'administration\nMises à jour des dépendances",
+                "it": "[Breaking Changes] Aggiunto supporto per firmware WARP >= 2.0.0 - le versioni firmware precedenti non sono più supportate\nRilevamento automatico del prodotto e del modello WARP all'avvio\nLa suddivisione dell'array in singoli stati è ora configurabile nelle impostazioni dell'amministratore\nAggiornamenti delle dipendenze",
+                "es": "[Cambios importantes] Se agregó compatibilidad con el firmware WARP >= 2.0.0: las versiones de firmware anteriores ya no son compatibles\nDetección automática de productos y modelos WARP al inicio\nLa división de la matriz en estados individuales ahora se puede configurar en la configuración de administración\nactualizaciones de dependencia",
+                "pl": "[Przełomowe zmiany] Dodano obsługę oprogramowania WARP >= 2.0.0 - starsze wersje oprogramowania nie są już obsługiwane\nAutomatyczne wykrywanie produktu i modelu WARP podczas uruchamiania\nPodział tablicy na pojedyncze stany można teraz konfigurować w ustawieniach administratora\nAktualizacje zależności",
+                "zh-cn": "[重大更改] 添加了对 WARP 固件 >= 2.0.0 的支持 - 不再支持旧固件版本\n启动时自动检测 WARP 产品和型号\n现在可以在管理设置中配置单个状态的数组拆分\n依赖更新"
+            },
             "0.0.4": {
                 "en": "fixed bug",
                 "de": "Fehler behoben",
