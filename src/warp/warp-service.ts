@@ -6,11 +6,14 @@ import { WarpApiDefinitions } from './warp-api-definitions';
 import { WarpClient } from './warp-client';
 
 export class WarpService {
+    private readonly _objectInitPeriodInSeconds = 60;
     private readonly _adapter: WarpAdapter;
     private readonly _log: ContextLogger;
     private readonly _subscribedIds: string[] = [];
     private readonly _client: WarpClient;
     private _apiDefinitions!: WarpApiDefinitions;
+    private _startInitTimestamp!: number;
+    private _objectsInitPeriodIsActive = true;
 
     constructor(adapter: WarpAdapter) {
         this._adapter = adapter;
@@ -21,6 +24,7 @@ export class WarpService {
     public async initAsync(versionBeforeUpdate: string): Promise<void> {
         this._log.info('Initializing');
         try {
+            this._startInitTimestamp = Date.now();
             await this._client.initAsync();
 
             const metaInformation = await this._client.getMetaInformationForStartup();
@@ -119,34 +123,46 @@ export class WarpService {
 
     private async handleWarpMessageAsync(message: WarpMessage): Promise<void> {
         this._log.debug(`Process new message from WARP charger with topic '${message.topic}'`);
-        const section = this._apiDefinitions.getSectionByTopicForProduct(message.topic);
-        //const parameters = section ? section.parameters : [];
-        this._log.silly(`Definition for topic: ${section?.toString()}`);
-        // TODO: Handle with new way of list (this._adapter.config.listBreakdownEnabled)
-        // if (isArray(message.payload) && parameters.length === 1 && parameters[0].listItems?.length === (<[]>message.payload)?.length) {
-        //     for (let index = 0; index < parameters[0].listItems.length; index++) {
-        //         await this.setStateSafelyAsync(`${this.getSectionId(message)}.${parameters[0].name}.${parameters[0].listItems[index].name}`, (<[]>message.payload)[index]);
-        //     }
-        // } else {
-        //     for (const property in message.payload) {
-        //         const sectionId = this.getSectionId(message);
-        //         const state = message.payload[property];
-        //         const parameter = parameters.find(param => param.name === property);
-        //         if (parameter && parameter.type === 'list') {
-        //             if (isArray(state) && parameter.listItems?.length === (<[]>state)?.length) {
-        //                 for (let index = 0; index < parameter.listItems.length; index++) {
-        //                     await this.setStateSafelyAsync(`${sectionId}.${parameter.name}.${parameter.listItems[index].name}`, (<[]>state)[index]);
-        //                 }
-        //             } else {
-        //                 const id = `${sectionId}.${property}.payload`;
-        //                 await this.setStateSafelyAsync(id, state);
-        //             }
-        //         } else {
-        //             const id = `${sectionId}.${property}`;
-        //             await this.setStateSafelyAsync(id, state);
-        //         }
-        //     }
-        // }
+
+        let section: WarpApiSection | undefined;
+        let parameters: WarpApiParameter[] = [];
+        if (this._objectsInitPeriodIsActive) {
+            section = this._apiDefinitions.getSectionByTopicForProduct(message.topic);
+            this._log.silly(`Definition for topic: ${section?.toString()}`);
+            parameters = section ? section.parameters : [];
+        }
+
+        for (const property in message.payload) {
+            if (this._objectsInitPeriodIsActive) {
+                const parameter = parameters.find(param => param.name === property);
+                if (section && parameter) {
+                    this._log.debug(`Object init period active. Create object for parameter '${parameter.name}' in section '${section.id}'`)
+                    await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter);
+                }
+            }
+
+            const sectionId = this.getSectionId(message);
+            const state = message.payload[property];
+            const id = `${sectionId}.${property}`;
+
+            await this.setStateSafelyAsync(id, state);
+            await this.handleArrayStatesIfNeededAsync(state, id);
+        }
+
+        if (this._objectsInitPeriodIsActive && this._startInitTimestamp) {
+            const ms = Date.now() - this._startInitTimestamp;
+            const seconds = Math.floor(ms / 1000);
+            this._objectsInitPeriodIsActive = seconds < this._objectInitPeriodInSeconds;
+        }
+    }
+
+    private async handleArrayStatesIfNeededAsync(state: any, id: string): Promise<void> {
+        if (this._adapter.config.listBreakdownEnabled && isArray(state)) {
+            const states = (<[]>state);
+            for (let index = 0; index < states.length; index++) {
+                await this.setStateSafelyAsync(`${id}.${index}`, states[index]);
+            }
+        }
     }
 
     private getSectionId = (message: WarpMessage): string => message.topic.replace(/\//g, '.');
@@ -222,11 +238,11 @@ export class WarpService {
 
     private async createObjectsForParameterAndSubscribeActionAsync(section: WarpApiSection, parameter: WarpApiParameter, sectionId?: string): Promise<void> {
         const parameterId = `${sectionId ? sectionId : section.id}.${parameter.name}`;
-        let obj: ioBroker.SettableObject = { type: 'state', common: { name: parameter.description, role: '', read: parameter.read, write: parameter.hasAction() }, native: {} };
+        const obj: ioBroker.SettableObject = { type: 'state', common: { name: parameter.description, role: '', read: parameter.read, write: parameter.hasAction() }, native: {} };
         switch (parameter.type) {
             case 'list':
-                // TODO other state type
-                obj = { type: 'channel', common: { name: parameter.description }, native: {} };
+                obj.common.type = 'array';
+                obj.common.role = 'list';
                 break;
             case 'enum':
                 obj.common.type = 'number';
@@ -273,13 +289,6 @@ export class WarpService {
             await this._adapter.subscribeStatesAsync(parameterId);
             this._subscribedIds.push(parameterId);
         }
-
-        // if (parameter.type === 'list') {
-        //     const childDefinitions = parameter.listItems ?? [];
-        //     for (const childDefinition of childDefinitions) {
-        //         await this.createObjectsForParameterAndSubscribeActionAsync(section, childDefinition, parameterId);
-        //     }
-        // }
     }
 }
 

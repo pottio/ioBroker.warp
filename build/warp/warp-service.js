@@ -26,7 +26,9 @@ var import_warp_api_definitions = require("./warp-api-definitions");
 var import_warp_client = require("./warp-client");
 class WarpService {
   constructor(adapter) {
+    this._objectInitPeriodInSeconds = 60;
     this._subscribedIds = [];
+    this._objectsInitPeriodIsActive = true;
     this.getSectionId = (message) => message.topic.replace(/\//g, ".");
     this._adapter = adapter;
     this._log = new import_context_logger.ContextLogger(adapter, WarpService.name);
@@ -35,6 +37,7 @@ class WarpService {
   async initAsync(versionBeforeUpdate) {
     this._log.info("Initializing");
     try {
+      this._startInitTimestamp = Date.now();
       await this._client.initAsync();
       const metaInformation = await this._client.getMetaInformationForStartup();
       if (!metaInformation) {
@@ -125,8 +128,40 @@ class WarpService {
   }
   async handleWarpMessageAsync(message) {
     this._log.debug(`Process new message from WARP charger with topic '${message.topic}'`);
-    const section = this._apiDefinitions.getSectionByTopicForProduct(message.topic);
-    this._log.silly(`Definition for topic: ${section == null ? void 0 : section.toString()}`);
+    let section;
+    let parameters = [];
+    if (this._objectsInitPeriodIsActive) {
+      section = this._apiDefinitions.getSectionByTopicForProduct(message.topic);
+      this._log.silly(`Definition for topic: ${section == null ? void 0 : section.toString()}`);
+      parameters = section ? section.parameters : [];
+    }
+    for (const property in message.payload) {
+      if (this._objectsInitPeriodIsActive) {
+        const parameter = parameters.find((param) => param.name === property);
+        if (section && parameter) {
+          this._log.debug(`Object init period active. Create object for parameter '${parameter.name}' in section '${section.id}'`);
+          await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter);
+        }
+      }
+      const sectionId = this.getSectionId(message);
+      const state = message.payload[property];
+      const id = `${sectionId}.${property}`;
+      await this.setStateSafelyAsync(id, state);
+      await this.handleArrayStatesIfNeededAsync(state, id);
+    }
+    if (this._objectsInitPeriodIsActive && this._startInitTimestamp) {
+      const ms = Date.now() - this._startInitTimestamp;
+      const seconds = Math.floor(ms / 1e3);
+      this._objectsInitPeriodIsActive = seconds < this._objectInitPeriodInSeconds;
+    }
+  }
+  async handleArrayStatesIfNeededAsync(state, id) {
+    if (this._adapter.config.listBreakdownEnabled && (0, import_tools.isArray)(state)) {
+      const states = state;
+      for (let index = 0; index < states.length; index++) {
+        await this.setStateSafelyAsync(`${id}.${index}`, states[index]);
+      }
+    }
   }
   async setStateSafelyAsync(id, state) {
     this._log.silly(`Set state for id: ${id}. State: '${state}'`);
@@ -194,10 +229,11 @@ class WarpService {
   }
   async createObjectsForParameterAndSubscribeActionAsync(section, parameter, sectionId) {
     const parameterId = `${sectionId ? sectionId : section.id}.${parameter.name}`;
-    let obj = { type: "state", common: { name: parameter.description, role: "", read: parameter.read, write: parameter.hasAction() }, native: {} };
+    const obj = { type: "state", common: { name: parameter.description, role: "", read: parameter.read, write: parameter.hasAction() }, native: {} };
     switch (parameter.type) {
       case "list":
-        obj = { type: "channel", common: { name: parameter.description }, native: {} };
+        obj.common.type = "array";
+        obj.common.role = "list";
         break;
       case "enum":
         obj.common.type = "number";
