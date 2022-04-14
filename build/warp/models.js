@@ -56,11 +56,11 @@ class WarpApiSection {
     this.description = description;
     this.parameters = parameters;
   }
-  hasParametersFor(product, model) {
-    return this.parameters.some((param) => param.isRelevantFor(product, model));
+  hasParametersFor(product) {
+    return this.parameters.some((param) => param.isRelevantFor(product));
   }
   filterSpecificParameters() {
-    return this.parameters.filter((param) => param.relevantForProducts !== WarpProduct.all || param.relevantForModels !== WarpModel.all);
+    return this.parameters.filter((param) => param.relevantForProducts !== WarpProduct.all);
   }
   get id() {
     return this.topic.replace("/", ".");
@@ -74,11 +74,11 @@ class WarpApiParameter {
     this.name = name;
     this.description = "";
     this.type = type;
-    this.relevantForModels = WarpModel.all;
+    this.read = true;
     this.relevantForProducts = WarpProduct.all;
   }
-  isRelevantFor(product, model) {
-    return this.relevantForProducts.some((prod) => prod === product) && this.relevantForModels.some((mod) => mod === model);
+  isRelevantFor(product) {
+    return this.relevantForProducts.some((prod) => prod === product);
   }
   hasActionType(actionType) {
     return this.actionType === actionType;
@@ -103,14 +103,6 @@ class WarpApiParameterBuilder {
     this._warpApiParameter.relevantForProducts = [WarpProduct.warp2];
     return this;
   }
-  onlyModelSmart() {
-    this._warpApiParameter.relevantForModels = [WarpModel.smart];
-    return this;
-  }
-  onlyModelPro() {
-    this._warpApiParameter.relevantForModels = [WarpModel.pro];
-    return this;
-  }
   actionUpdateValue(topic, payloadTemplate) {
     this._warpApiParameter.actionTopic = topic;
     this._warpApiParameter.actionType = "update-value";
@@ -129,9 +121,14 @@ class WarpApiParameterBuilder {
     this._warpApiParameter.actionType = "update-config";
     return this;
   }
-  item(param) {
-    if (this._warpApiParameter.listItems)
-      this._warpApiParameter.listItems.push(param);
+  actionSendJson(topic) {
+    this._warpApiParameter.actionTopic = topic;
+    this._warpApiParameter.actionType = "send-json";
+    this._warpApiParameter.actionMethod = "PUT";
+    return this;
+  }
+  noRead() {
+    this._warpApiParameter.read = false;
     return this;
   }
   build() {
@@ -153,9 +150,9 @@ class Param {
     enumParam.enumValues = enumValues;
     return new WarpApiParameterBuilder(enumParam);
   }
-  static list(name) {
+  static list(name, type) {
     const listParam = new WarpApiParameter(name, "list");
-    listParam.listItems = [];
+    listParam.listType = type;
     return new WarpApiParameterBuilder(listParam);
   }
   static numb(name, unit, min, max) {

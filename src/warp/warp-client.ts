@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import WebSocketClient from 'ws';
 import { WarpAdapter } from '../main';
 import { ContextLogger } from './../lib/context-logger';
-import { WarpMessage } from './models';
+import { WarpMessage, WarpMetaInformation, WarpProduct } from './models';
 
 export class WarpClient {
     private readonly _reconnectTimeoutInSeconds = 60;
@@ -29,19 +29,28 @@ export class WarpClient {
     constructor(adapter: WarpAdapter) {
         this._adapter = adapter;
         this._log = new ContextLogger(adapter, WarpClient.name);
-        this._lastReceivedKeepAliveTimestamp = Date.now();
+    }
+
+    public async initAsync(): Promise<void> {
+        this._log.info('Initializing');
+        try {
+            this._apiBasePath = `http${this._adapter.config.secureConnection ? 's' : ''}://${this._adapter.config.ipOrHostname}`;
+            this._webSocketBasePath = `ws${this._adapter.config.secureConnection ? 's' : ''}://${this._adapter.config.ipOrHostname}`;
+            this._log.debug(`WARP charger api base path: '${this._apiBasePath}'. Websocket base path: '${this._webSocketBasePath}'`);
+        } catch (e) {
+            this._log.error('Initializing failed', e)
+        }
+        this._log.info('Initialized');
     }
 
     public async connectAsync(): Promise<void> {
         this._log.info('Try connecting to WARP charger');
         try {
+            this._lastReceivedKeepAliveTimestamp = Date.now();
             // eslint-disable-next-line @typescript-eslint/no-this-alias
             const warpClient = this;
             if (this._reconnectTimeout) clearTimeout(this._reconnectTimeout);
             if (this._checkConnectionInterval) clearInterval(this._checkConnectionInterval);
-            this._apiBasePath = `http${this._adapter.config.secureConnection ? 's' : ''}://${this._adapter.config.ipOrHostname}`;
-            this._webSocketBasePath = `ws${this._adapter.config.secureConnection ? 's' : ''}://${this._adapter.config.ipOrHostname}`;
-            this._log.debug(`WARP charger api base path: '${this._apiBasePath}'. Websocket base path: '${this._webSocketBasePath}'`)
             if (this._ws) this._ws.close();
             const path = '/ws';
             const authorizationToken = await this.getAuthorizationTokenAsync(path, 'GET');
@@ -63,6 +72,45 @@ export class WarpClient {
             this._log.info('Disconnecting from WARP charger');
             this._ws.close();
         }
+    }
+
+    public async getMetaInformationForStartup(): Promise<WarpMetaInformation | undefined> {
+        this._log.info('Retrieve meta information for adapter startup from WARP charger');
+        try {
+            const versionResponse = await this.doGetRequestAsync('/info/version');
+            const nameResponse = await this.doGetRequestAsync('/info/name');
+            const featuresResponse = <string[]>await this.doGetRequestAsync('/info/features');
+
+            if (versionResponse?.hasOwnProperty('firmware')
+                && nameResponse?.hasOwnProperty('name')
+                && nameResponse?.hasOwnProperty('type')
+                && nameResponse?.hasOwnProperty('display_type')
+                && !!featuresResponse) {
+                return {
+                    name: nameResponse['name'],
+                    product: nameResponse['type'] === 'warp' ? WarpProduct.warp1 : WarpProduct.warp2,
+                    firmwareVersion: versionResponse['firmware'],
+                    displayType: nameResponse['display_type'],
+                    features: featuresResponse
+                };
+            }
+            return undefined;
+        } catch (e) {
+            this._log.error('Retrieving meta information failed', e);
+        }
+    }
+
+    private async doGetRequestAsync(path: string): Promise<any> {
+        const authorizationToken = await this.getAuthorizationTokenAsync(path, 'GET');
+        const headers: axios.AxiosRequestHeaders = authorizationToken ? { Accept: 'application/json', Authorization: authorizationToken } : { Accept: 'application/json' };
+        const url = `${this._apiBasePath}${path}`;
+        this._log.debug(`GET: ${url}`);
+        const response = await axios.default({
+            headers: headers,
+            method: 'GET',
+            url: url
+        });
+        return response.data;
     }
 
     public async sendMessageAsync(message: WarpMessage, method: 'PUT' | 'GET' = 'PUT'): Promise<void> {

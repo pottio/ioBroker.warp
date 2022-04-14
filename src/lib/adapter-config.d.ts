@@ -6,9 +6,8 @@ declare global {
 		interface AdapterConfig {
 			authEnabled: boolean,
 			ipOrHostname: string,
-			model: string,
+			listBreakdownEnabled: boolean,
 			password: string,
-			product: string,
 			secureConnection: boolean,
 			user: string
 		}

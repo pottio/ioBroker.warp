@@ -1,6 +1,6 @@
 
 export type WarpApiParameterType = 'enum' | 'number' | 'bool' | 'list' | 'button' | 'json' | 'text';
-export type WarpApiActionType = 'update-value' | 'update-config' | 'send-command';
+export type WarpApiActionType = 'update-value' | 'update-config' | 'send-command' | 'send-json';
 export type WarpApiButtonType = 'normal' | 'start' | 'stop';
 export abstract class WarpProduct {
     public static readonly warp1: string = 'warp1';
@@ -17,6 +17,14 @@ export abstract class WarpModel {
 export interface WarpMessage {
     topic: string;
     payload: any;
+}
+
+export interface WarpMetaInformation {
+    name: string;
+    product: string;
+    displayType: string;
+    firmwareVersion: string
+    features: string[];
 }
 
 export class WarpApi {
@@ -49,12 +57,12 @@ export class WarpApiSection {
         this.parameters = parameters;
     }
 
-    public hasParametersFor(product: string, model: string): boolean {
-        return this.parameters.some(param => param.isRelevantFor(product, model));
+    public hasParametersFor(product: string): boolean {
+        return this.parameters.some(param => param.isRelevantFor(product));
     }
 
     public filterSpecificParameters(): WarpApiParameter[] {
-        return this.parameters.filter(param => (param.relevantForProducts !== WarpProduct.all || param.relevantForModels !== WarpModel.all));
+        return this.parameters.filter(param => param.relevantForProducts !== WarpProduct.all);
     }
 
     public get id(): string {
@@ -72,28 +80,30 @@ export class WarpApiParameter {
     public type: WarpApiParameterType;
     public description: string;
     public relevantForProducts: string[];
-    public relevantForModels: string[];
+    //public relevantForModels: string[];
     public actionTopic?: string;
     public actionPayloadTemplate?: any;
     public actionType?: WarpApiActionType;
     public actionMethod?: 'PUT' | 'GET';
     public enumValues?: { [index: number]: string; };
     public unit?: string;
-    public listItems?: WarpApiParameter[];
+    public listType?: WarpApiParameterType;
     public min?: number;
     public max?: number;
-    public buttonType?: WarpApiButtonType
+    public buttonType?: WarpApiButtonType;
+    public read: boolean;
 
     constructor(name: string, type: WarpApiParameterType) {
         this.name = name;
         this.description = '';
         this.type = type;
-        this.relevantForModels = WarpModel.all;
+        this.read = true;
+        //this.relevantForModels = WarpModel.all;
         this.relevantForProducts = WarpProduct.all;
     }
 
-    isRelevantFor(product: string, model: string): boolean {
-        return this.relevantForProducts.some(prod => prod === product) && this.relevantForModels.some(mod => mod === model);
+    isRelevantFor(product: string): boolean {
+        return this.relevantForProducts.some(prod => prod === product);
     }
 
     hasActionType(actionType: WarpApiActionType): boolean {
@@ -124,14 +134,14 @@ export class WarpApiParameterBuilder {
         this._warpApiParameter.relevantForProducts = [WarpProduct.warp2];
         return this;
     }
-    onlyModelSmart(): WarpApiParameterBuilder {
-        this._warpApiParameter.relevantForModels = [WarpModel.smart];
-        return this;
-    }
-    onlyModelPro(): WarpApiParameterBuilder {
-        this._warpApiParameter.relevantForModels = [WarpModel.pro];
-        return this;
-    }
+    // onlyModelSmart(): WarpApiParameterBuilder {
+    //     this._warpApiParameter.relevantForModels = [WarpModel.smart];
+    //     return this;
+    // }
+    // onlyModelPro(): WarpApiParameterBuilder {
+    //     this._warpApiParameter.relevantForModels = [WarpModel.pro];
+    //     return this;
+    // }
     actionUpdateValue(topic: string, payloadTemplate: any): WarpApiParameterBuilder {
         this._warpApiParameter.actionTopic = topic;
         this._warpApiParameter.actionType = 'update-value';
@@ -150,8 +160,14 @@ export class WarpApiParameterBuilder {
         this._warpApiParameter.actionType = 'update-config';
         return this;
     }
-    item(param: WarpApiParameter): WarpApiParameterBuilder {
-        if (this._warpApiParameter.listItems) this._warpApiParameter.listItems.push(param);
+    actionSendJson(topic: string): WarpApiParameterBuilder {
+        this._warpApiParameter.actionTopic = topic;
+        this._warpApiParameter.actionType = 'send-json';
+        this._warpApiParameter.actionMethod = 'PUT';
+        return this;
+    }
+    noRead(): WarpApiParameterBuilder {
+        this._warpApiParameter.read = false;
         return this;
     }
     build(): WarpApiParameter {
@@ -174,9 +190,9 @@ export abstract class Param {
         enumParam.enumValues = enumValues;
         return new WarpApiParameterBuilder(enumParam);
     }
-    public static list(name: string): WarpApiParameterBuilder {
+    public static list(name: string, type: WarpApiParameterType): WarpApiParameterBuilder {
         const listParam = new WarpApiParameter(name, 'list');
-        listParam.listItems = [];
+        listParam.listType = type;
         return new WarpApiParameterBuilder(listParam);
     }
     public static numb(name: string, unit?: string, min?: number, max?: number): WarpApiParameterBuilder {
@@ -194,9 +210,4 @@ export abstract class Param {
         const textParam = new WarpApiParameter(name, 'text');
         return new WarpApiParameterBuilder(textParam);
     }
-}
-
-export interface WarpApiMigration {
-    deletedParameterIds: string[];
-    changedParameterIds: string[];
 }

@@ -28,6 +28,7 @@ var crypto = __toESM(require("crypto"));
 var import_events = require("events");
 var import_ws = __toESM(require("ws"));
 var import_context_logger = require("./../lib/context-logger");
+var import_models = require("./models");
 class WarpClient {
   constructor(adapter) {
     this._reconnectTimeoutInSeconds = 60;
@@ -40,19 +41,27 @@ class WarpClient {
     this.webSocketMessageEmitter = new import_events.EventEmitter();
     this._adapter = adapter;
     this._log = new import_context_logger.ContextLogger(adapter, WarpClient.name);
-    this._lastReceivedKeepAliveTimestamp = Date.now();
+  }
+  async initAsync() {
+    this._log.info("Initializing");
+    try {
+      this._apiBasePath = `http${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ipOrHostname}`;
+      this._webSocketBasePath = `ws${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ipOrHostname}`;
+      this._log.debug(`WARP charger api base path: '${this._apiBasePath}'. Websocket base path: '${this._webSocketBasePath}'`);
+    } catch (e) {
+      this._log.error("Initializing failed", e);
+    }
+    this._log.info("Initialized");
   }
   async connectAsync() {
     this._log.info("Try connecting to WARP charger");
     try {
+      this._lastReceivedKeepAliveTimestamp = Date.now();
       const warpClient = this;
       if (this._reconnectTimeout)
         clearTimeout(this._reconnectTimeout);
       if (this._checkConnectionInterval)
         clearInterval(this._checkConnectionInterval);
-      this._apiBasePath = `http${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ipOrHostname}`;
-      this._webSocketBasePath = `ws${this._adapter.config.secureConnection ? "s" : ""}://${this._adapter.config.ipOrHostname}`;
-      this._log.debug(`WARP charger api base path: '${this._apiBasePath}'. Websocket base path: '${this._webSocketBasePath}'`);
       if (this._ws)
         this._ws.close();
       const path = "/ws";
@@ -76,6 +85,38 @@ class WarpClient {
       this._log.info("Disconnecting from WARP charger");
       this._ws.close();
     }
+  }
+  async getMetaInformationForStartup() {
+    this._log.info("Retrieve meta information for adapter startup from WARP charger");
+    try {
+      const versionResponse = await this.doGetRequestAsync("/info/version");
+      const nameResponse = await this.doGetRequestAsync("/info/name");
+      const featuresResponse = await this.doGetRequestAsync("/info/features");
+      if ((versionResponse == null ? void 0 : versionResponse.hasOwnProperty("firmware")) && (nameResponse == null ? void 0 : nameResponse.hasOwnProperty("name")) && (nameResponse == null ? void 0 : nameResponse.hasOwnProperty("type")) && (nameResponse == null ? void 0 : nameResponse.hasOwnProperty("display_type")) && !!featuresResponse) {
+        return {
+          name: nameResponse["name"],
+          product: nameResponse["type"] === "warp" ? import_models.WarpProduct.warp1 : import_models.WarpProduct.warp2,
+          firmwareVersion: versionResponse["firmware"],
+          displayType: nameResponse["display_type"],
+          features: featuresResponse
+        };
+      }
+      return void 0;
+    } catch (e) {
+      this._log.error("Retrieving meta information failed", e);
+    }
+  }
+  async doGetRequestAsync(path) {
+    const authorizationToken = await this.getAuthorizationTokenAsync(path, "GET");
+    const headers = authorizationToken ? { Accept: "application/json", Authorization: authorizationToken } : { Accept: "application/json" };
+    const url = `${this._apiBasePath}${path}`;
+    this._log.debug(`GET: ${url}`);
+    const response = await axios.default({
+      headers,
+      method: "GET",
+      url
+    });
+    return response.data;
   }
   async sendMessageAsync(message, method = "PUT") {
     this._log.info("Send message to WARP charger");

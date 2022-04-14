@@ -11,15 +11,13 @@
 
 ## WARP charger adapter for ioBroker
 
-:warning: :warning: 
-**This adapter is compatible with WARP firmware version < 2.0.0** :warning: :warning: 
-_Support for WARP firmware version >= 2.0.0 is still in development_
-
 This adapter monitors and controls a wallbox [(WARP charger)](https://www.warp-charger.com/) by [Tinkerforge](https://www.tinkerforge.com/de/) via ioBroker. The connection will be established via WebSockets.
+
+#### Only WARP firmware versions >= 2.0.0 are supported since adapter version 1.0.0
 
 Why using this adapter - it is also possible to connect the wallbox to ioBroker via MQTT ?! 
 
-However, no individual states are sent via MQTT, but complex JSON objects. The warp adapter resolves the complex JSON objects into single states. This makes it easier to react on value changes of a single state. In addition, each state is provided with the corresponding description, unit and further information, which can be found in the [official API documentation](https://www.warp-charger.com/api.html). To top it off, all commands such as starting/stopping a charging process are supported.
+However, no individual states are sent via MQTT, but complex JSON objects. The warp adapter resolves the complex JSON objects into single states. This makes it easier to react on value changes of a single state. In addition, each state is provided with the corresponding description, unit and further information, which can be found in the [official API documentation](https://www.warp-charger.com/api.html). To top it off some commands like starting/stopping charging, setting upper limits of allowed charging current, resetting meter readings, scanning nearby WLAN networks and customizing the display name are possible. The change of all system parameters, such as network configuration, MQTT settings, user administration or load manager, are only possible via the web interface for security reasons.
 
 ### Supported WARP chargers
 
@@ -35,6 +33,12 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (pottio) [Breaking Changes] Added support for WARP firmware >= 2.0.0 - older firmware versions are no longer supported
+* (pottio) Automatic WARP product and model detection on startup
+* (pottio) Split of array in single states is now configurable in admin settings
+* (pottio) Dependency updates
+
 ### 0.0.4 (2022-04-06)
 * (pottio) fixed bug
 ### 0.0.3 (2022-03-22)

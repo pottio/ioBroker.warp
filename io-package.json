@@ -111,9 +111,8 @@
     "native": {
         "authEnabled": false,
         "ipOrHostname": "",
-        "model": "",
+        "listBreakdownEnabled": false,
         "password": "",
-        "product": "",
         "secureConnection": false,
         "user": ""
     },
@@ -141,33 +140,7 @@
             "native": {}
         },
         {
-            "_id": "info.product",
-            "type": "config",
-            "common": {
-                "role": "text",
-                "name": "Configured product on last adapter execution (needed to generate objects on adapter start)",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.model",
-            "type": "config",
-            "common": {
-                "role": "text",
-                "name": "Configured model on last adapter execution (needed to generate objects on adapter start)",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.version",
+            "_id": "info.last_executed_adapter_version",
             "type": "config",
             "common": {
                 "role": "text",

@@ -6,11 +6,14 @@ import { WarpApiDefinitions } from './warp-api-definitions';
 import { WarpClient } from './warp-client';
 
 export class WarpService {
+    private readonly _objectInitPeriodInSeconds = 60;
     private readonly _adapter: WarpAdapter;
     private readonly _log: ContextLogger;
     private readonly _subscribedIds: string[] = [];
     private readonly _client: WarpClient;
     private _apiDefinitions!: WarpApiDefinitions;
+    private _startInitTimestamp!: number;
+    private _objectsInitPeriodIsActive = true;
 
     constructor(adapter: WarpAdapter) {
         this._adapter = adapter;
@@ -18,16 +21,24 @@ export class WarpService {
         this._client = new WarpClient(adapter);
     }
 
-    public async initAsync(configurationChanged: boolean, versionBeforeUpdate: string): Promise<void> {
+    public async initAsync(versionBeforeUpdate: string): Promise<void> {
         this._log.info('Initializing');
         try {
-            this._log.info(`Generate API definitions for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
-            this._apiDefinitions = new WarpApiDefinitions(this._adapter.config.product, this._adapter.config.model);
-            if (configurationChanged) {
-                await this.deleteAllObjectsWithSpecificProductOrModelDefinitionAsync();
+            this._startInitTimestamp = Date.now();
+            await this._client.initAsync();
+
+            const metaInformation = await this._client.getMetaInformationForStartup();
+            if (!metaInformation) {
+                throw new Error('Unable to receive meta information from WARP. Please make sure firmware version >= 2.0.0 is installed on your WARP charger');
             }
-            const parameterIdsForOverride = await this.deleteObjectsRemovedFromDefinitionsAfterAdapterUpdateAsync(versionBeforeUpdate);
-            await this.initialCreateOrOverrideAllObjectsAsync(parameterIdsForOverride);
+            this._log.info(`Received information from ${metaInformation.displayType} (${metaInformation.name}) with firmware version ${metaInformation.firmwareVersion}`);
+
+            this._log.info(`Generate API definitions for product '${metaInformation.product}'`);
+            this._apiDefinitions = new WarpApiDefinitions(metaInformation.product);
+
+            await this.deleteObjectsRemovedFromDefinitionsAfterAdapterUpdateAsync(versionBeforeUpdate);
+            await this.initialCreateSectionsAndActionsAsync(metaInformation.product);
+
             await this._client.connectAsync();
             this._client.webSocketMessageEmitter.on('message', async (message: WarpMessage) => this.handleWarpMessageAsync(message));
         } catch (e) {
@@ -51,7 +62,7 @@ export class WarpService {
         if (state.ack === false) {
             this._log.info(`Handle changed state by user with id '${id}' to value '${state.val}'`);
             try {
-                const section = this._apiDefinitions.getSectionByIdForConfig(id);
+                const section = this._apiDefinitions.getSectionByIdForProduct(id);
                 const parameter = section?.parameters.find(param => id.endsWith(param.name));
                 if (section && parameter && parameter.hasAction()) {
                     this._log.silly(`Definition for id: ${JSON.stringify(parameter)}`);
@@ -96,6 +107,9 @@ export class WarpService {
                     payload += '}';
                     resolve(JSON.parse(payload));
                     break;
+                case 'send-json':
+                    resolve(JSON.parse(`${state.val}`));
+                    break;
                 default:
                     this._log.warn(`Api parameter action type '${parameter.actionType}' is unknown.`);
                     resolve(undefined);
@@ -109,31 +123,45 @@ export class WarpService {
 
     private async handleWarpMessageAsync(message: WarpMessage): Promise<void> {
         this._log.debug(`Process new message from WARP charger with topic '${message.topic}'`);
-        const section = this._apiDefinitions.getSectionByTopicForConfig(message.topic);
-        const parameters = section ? section.parameters : [];
-        this._log.silly(`Definition for topic: ${section?.toString()}`);
-        if (isArray(message.payload) && parameters.length === 1 && parameters[0].listItems?.length === (<[]>message.payload)?.length) {
-            for (let index = 0; index < parameters[0].listItems.length; index++) {
-                await this.setStateSafelyAsync(`${this.getSectionId(message)}.${parameters[0].name}.${parameters[0].listItems[index].name}`, (<[]>message.payload)[index]);
-            }
-        } else {
-            for (const property in message.payload) {
-                const sectionId = this.getSectionId(message);
-                const state = message.payload[property];
+
+        let section: WarpApiSection | undefined;
+        let parameters: WarpApiParameter[] = [];
+        if (this._objectsInitPeriodIsActive) {
+            section = this._apiDefinitions.getSectionByTopicForProduct(message.topic);
+            this._log.silly(`Definition for topic: ${section?.toString()}`);
+            parameters = section ? section.parameters : [];
+        }
+
+        for (const property in message.payload) {
+            if (this._objectsInitPeriodIsActive) {
                 const parameter = parameters.find(param => param.name === property);
-                if (parameter && parameter.type === 'list') {
-                    if (isArray(state) && parameter.listItems?.length === (<[]>state)?.length) {
-                        for (let index = 0; index < parameter.listItems.length; index++) {
-                            await this.setStateSafelyAsync(`${sectionId}.${parameter.name}.${parameter.listItems[index].name}`, (<[]>state)[index]);
-                        }
-                    } else {
-                        const id = `${sectionId}.${property}.payload`;
-                        await this.setStateSafelyAsync(id, state);
-                    }
-                } else {
-                    const id = `${sectionId}.${property}`;
-                    await this.setStateSafelyAsync(id, state);
+                if (section && parameter) {
+                    this._log.debug(`Object init period active. Create object for parameter '${parameter.name}' in section '${section.id}'`)
+                    await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter);
                 }
+            }
+
+            const sectionId = this.getSectionId(message);
+            const state = message.payload[property];
+            const id = `${sectionId}.${property}`;
+
+            await this.setStateSafelyAsync(id, state);
+            await this.handleArrayStatesIfNeededAsync(state, id);
+        }
+
+        if (this._objectsInitPeriodIsActive && this._startInitTimestamp) {
+            const ms = Date.now() - this._startInitTimestamp;
+            const seconds = Math.floor(ms / 1000);
+            this._objectsInitPeriodIsActive = seconds < this._objectInitPeriodInSeconds;
+            if (!this._objectsInitPeriodIsActive) this._log.info(`Object init period ended`);
+        }
+    }
+
+    private async handleArrayStatesIfNeededAsync(state: any, id: string): Promise<void> {
+        if (this._adapter.config.listBreakdownEnabled && isArray(state)) {
+            const states = (<[]>state);
+            for (let index = 0; index < states.length; index++) {
+                await this.setStateSafelyAsync(`${id}.${index}`, states[index]);
             }
         }
     }
@@ -153,95 +181,69 @@ export class WarpService {
         await this._adapter.setStateAsync(id, state, true);
     }
 
-
-    private async deleteAllObjectsWithSpecificProductOrModelDefinitionAsync(): Promise<void> {
-        this._log.info('Product or model configuration changed since last adapter start. Delete all objects with specific API definitions for product or model');
-        try {
-            for (const section of this._apiDefinitions.getAllSections()) {
-                const parametersForSpecificProductOrModel = section.filterSpecificParameters();
-                if (parametersForSpecificProductOrModel.length === section.parameters.length && section.parameters.length !== 0) {
-                    this._log.debug(`All parameter definitions inside section definition are specific. Delete object with id '${section.id}'`);
-                    await this._adapter.delObjectAsync(section.id, { recursive: true });
-                } else {
-                    for (const parameter of parametersForSpecificProductOrModel) {
-                        const objectIdForDeletion = `${section.id}.${parameter.name}`;
-                        this._log.debug(`Parameter definition inside section '${section.id}' is specific. Delete object with id '${objectIdForDeletion}'`);
-                        await this._adapter.delObjectAsync(`${objectIdForDeletion}`, { recursive: true });
-                    }
-                }
-            }
-        } catch (e) {
-            this._log.error('Delete all objects with specific API definitions failed', e)
-        }
-    }
-
-    private async deleteObjectsRemovedFromDefinitionsAfterAdapterUpdateAsync(versionBeforeUpdate: string): Promise<string[]> {
+    private async deleteObjectsRemovedFromDefinitionsAfterAdapterUpdateAsync(versionBeforeUpdate: string): Promise<void> {
         this._log.info('Migrate objects if adapter version changed since last adapter start');
-        let parameterIdsForOverride: string[] = [];
         try {
             const lastMigratedAdapterVersion = this.semVerToNumber(versionBeforeUpdate);
-            for (const migrationKey in this._apiDefinitions.migrations) {
+            for (const migrationKey in this._apiDefinitions.deletedParameterIds) {
                 const migrationVersion = this.semVerToNumber(migrationKey);
                 if (lastMigratedAdapterVersion < migrationVersion) {
                     this._log.info(`Need migrating to '${migrationKey}'. Adapter version at last start: '${versionBeforeUpdate}'`);
-                    const migration = this._apiDefinitions.migrations[migrationKey];
-                    for (const parameterId of migration.deletedParameterIds) {
+                    for (const parameterId of this._apiDefinitions.deletedParameterIds[migrationKey]) {
                         this._log.debug(`Migration to '${migrationKey}': Definition was removed for '${parameterId}'. Delete object`);
                         await this._adapter.delObjectAsync(parameterId, { recursive: true });
                     }
-                    this._log.debug(`Migration to '${migrationKey}': Need override objects with changed definitions: '${migration.changedParameterIds.toString()}'`);
-                    parameterIdsForOverride = [...parameterIdsForOverride, ...migration.changedParameterIds];
                 }
             }
         } catch (e) {
             this._log.error('Migrate objects failed', e)
         }
-        return parameterIdsForOverride;
     }
 
     private semVerToNumber(version: string): number {
         return +version.replace(/\./g, '')
     }
 
-    private async initialCreateOrOverrideAllObjectsAsync(parameterIdsForOverride: string[]): Promise<void> {
-        this._log.info(`Create if not exists or override all objects for product '${this._adapter.config.product}' and model '${this._adapter.config.model}'`);
+    private async initialCreateSectionsAndActionsAsync(product: string): Promise<void> {
+        this._log.info(`Create if not exists or override all sections and actions for product '${product}'`);
         try {
-            for (const section of this._apiDefinitions.getAllSectionsForConfig()) {
-                await this.createObjectsForSectionIfNotExistsAsync(section);
+            for (const section of this._apiDefinitions.getAllSectionsForProduct()) {
+                await this.createObjectsForSectionAsync(section);
                 for (const parameter of section.parameters) {
-                    if (parameter.isRelevantFor(this._adapter.config.product, this._adapter.config.model)) {
-                        await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter, parameterIdsForOverride);
+                    if (parameter.isRelevantFor(product) && parameter.hasAction()) {
+                        await this.createObjectsForParameterAndSubscribeActionAsync(section, parameter);
                     }
                 }
             }
         } catch (e) {
-            this._log.error('Creating or overriding objects failed', e)
+            this._log.error('Creating or overriding sections and actions failed', e)
         }
     }
 
-    private async createObjectsForSectionIfNotExistsAsync(section: WarpApiSection): Promise<void> {
+    private async createObjectsForSectionAsync(section: WarpApiSection): Promise<void> {
         if (!section.api.preventCreating) {
-            this._log.debug(`Create device '${section.api.id}'`);
-            await this._adapter.setObjectNotExistsAsync(section.api.id, {
+            this._log.debug(`Create or override device '${section.api.id}'`);
+            await this._adapter.setObjectAsync(section.api.id, {
                 type: 'device',
                 common: { name: section.api.description },
                 native: {},
             });
         }
-        this._log.debug(`Create channel '${section.id}'`);
-        await this._adapter.setObjectNotExistsAsync(section.id, {
+        this._log.debug(`Create or override channel '${section.id}'`);
+        await this._adapter.setObjectAsync(section.id, {
             type: 'channel',
             common: { name: section.description },
             native: {},
         });
     }
 
-    private async createObjectsForParameterAndSubscribeActionAsync(section: WarpApiSection, parameter: WarpApiParameter, parameterIdsForOverride: string[], sectionId?: string): Promise<void> {
+    private async createObjectsForParameterAndSubscribeActionAsync(section: WarpApiSection, parameter: WarpApiParameter, sectionId?: string): Promise<void> {
         const parameterId = `${sectionId ? sectionId : section.id}.${parameter.name}`;
-        let obj: ioBroker.SettableObject = { type: 'state', common: { name: parameter.description, role: '', read: true, write: parameter.hasAction() }, native: {} };
+        const obj: ioBroker.SettableObject = { type: 'state', common: { name: parameter.description, role: '', read: parameter.read, write: parameter.hasAction() }, native: {} };
         switch (parameter.type) {
             case 'list':
-                obj = { type: 'channel', common: { name: parameter.description }, native: {} };
+                obj.common.type = 'array';
+                obj.common.role = 'list';
                 break;
             case 'enum':
                 obj.common.type = 'number';
@@ -280,25 +282,13 @@ export class WarpService {
                 this._log.warn(`Api definition type '${parameter.type}' is unknown.`);
         }
 
-        if (parameterIdsForOverride.some(paramId => paramId === parameterId)) {
-            this._log.debug(`Override state '${parameterId}'`);
-            await this._adapter.setObjectAsync(parameterId, obj);
-        } else {
-            this._log.debug(`Create state if not exists '${parameterId}'`);
-            await this._adapter.setObjectNotExistsAsync(parameterId, obj);
-        }
+        this._log.debug(`Create or override state '${parameterId}'`);
+        await this._adapter.setObjectAsync(parameterId, obj);
 
         if (parameter.hasAction()) {
             this._log.debug(`Subscribe state changes '${parameterId}'`);
             await this._adapter.subscribeStatesAsync(parameterId);
             this._subscribedIds.push(parameterId);
-        }
-
-        if (parameter.type === 'list') {
-            const childDefinitions = parameter.listItems ?? [];
-            for (const childDefinition of childDefinitions) {
-                await this.createObjectsForParameterAndSubscribeActionAsync(section, childDefinition, parameterIdsForOverride, parameterId);
-            }
         }
     }
 }
