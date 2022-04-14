@@ -89,9 +89,9 @@ class WarpClient {
   async getMetaInformationForStartup() {
     this._log.info("Retrieve meta information for adapter startup from WARP charger");
     try {
-      const versionResponse = await this.doGetRequestAsync("info/version");
-      const nameResponse = await this.doGetRequestAsync("info/name");
-      const featuresResponse = await this.doGetRequestAsync("info/features");
+      const versionResponse = await this.doGetRequestAsync("/info/version");
+      const nameResponse = await this.doGetRequestAsync("/info/name");
+      const featuresResponse = await this.doGetRequestAsync("/info/features");
       if ((versionResponse == null ? void 0 : versionResponse.hasOwnProperty("firmware")) && (nameResponse == null ? void 0 : nameResponse.hasOwnProperty("name")) && (nameResponse == null ? void 0 : nameResponse.hasOwnProperty("type")) && (nameResponse == null ? void 0 : nameResponse.hasOwnProperty("display_type")) && !!featuresResponse) {
         return {
           name: nameResponse["name"],

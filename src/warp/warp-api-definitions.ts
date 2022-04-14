@@ -109,23 +109,23 @@ export class WarpApiDefinitions {
             Param.bool('clear_on_disconnect').withDescription('Indicates whether the charging current of this slot is set to 0 when a vehicle is unplugged').actionUpdateConfig('evse/external_defaults_update').build()
         ]);
         evse.add('evse/gpio_configuration', 'The configuration of the configurable inputs and outputs', [
-            Param.enum('shutdown_input', { 0: 'NOT_CONFIGURED', 1: 'TURN_OFF_WHEN_OPENED', 2: 'TURN_OFF_WHEN_CLOSED' }).onlyWarp2().withDescription('The configuration of the switch-off input').actionUpdateConfig('evse/gpio_configuration_update').build(),
-            Param.enum('input', { 0: 'NOT_CONFIGURED' }).onlyWarp2().withDescription('The configuration of the configurable input').actionUpdateConfig('evse/gpio_configuration_update').build(),
-            Param.enum('output', { 0: 'CONNECTED_TO_GROUND', 1: 'HIGH_IMPEDANCE' }).onlyWarp2().withDescription('The configuration of the configurable output').actionUpdateConfig('evse/gpio_configuration_update').build()
+            Param.enum('shutdown_input', { 0: 'NOT_CONFIGURED', 1: 'TURN_OFF_WHEN_OPENED', 2: 'TURN_OFF_WHEN_CLOSED' }).onlyWarp2().withDescription('The configuration of the switch-off input').build(),
+            Param.enum('input', { 0: 'NOT_CONFIGURED' }).onlyWarp2().withDescription('The configuration of the configurable input').build(),
+            Param.enum('output', { 0: 'CONNECTED_TO_GROUND', 1: 'HIGH_IMPEDANCE' }).onlyWarp2().withDescription('The configuration of the configurable output').build()
         ]);
         evse.add('evse/button_configuration', 'The configuration of the button in the front panel', [
             Param.enum('button', { 0: 'DEACTIVATED', 1: 'CHARGE_START_WHEN_PRESSED', 2: 'CHARGE_STOP_WHEN_PRESSED', 3: 'CHARGE_TOGGLE_WHEN_PRESSED' }).onlyWarp2().withDescription('The configuration of the button in the front panel').actionUpdateConfig('evse/button_configuration_update').build()
         ]);
         evse.add('evse/user_calibration', 'Allows the factory calibration of the EVSE to be read and overwritten', [
-            Param.bool('user_calibration_active').onlyWarp1().withDescription('Indicates whether the factory calibration has been overwritten').actionUpdateConfig('evse/user_calibration_update').build(),
-            Param.numb('voltage_diff').onlyWarp1().withDescription('One of the calibration parameters').actionUpdateConfig('evse/user_calibration_update').build(),
-            Param.numb('voltage_mul').onlyWarp1().withDescription('One of the calibration parameters').actionUpdateConfig('evse/user_calibration_update').build(),
-            Param.numb('voltage_div').onlyWarp1().withDescription('One of the calibration parameters').actionUpdateConfig('evse/user_calibration_update').build(),
-            Param.numb('resistance_2700').onlyWarp1().withDescription('One of the calibration parameters').actionUpdateConfig('evse/user_calibration_update').build(),
-            Param.json('resistance_880').onlyWarp1().withDescription('One of the calibration parameters').actionUpdateConfig('evse/user_calibration_update').build()
+            Param.bool('user_calibration_active').onlyWarp1().withDescription('Indicates whether the factory calibration has been overwritten').build(),
+            Param.numb('voltage_diff').onlyWarp1().withDescription('One of the calibration parameters').build(),
+            Param.numb('voltage_mul').onlyWarp1().withDescription('One of the calibration parameters').build(),
+            Param.numb('voltage_div').onlyWarp1().withDescription('One of the calibration parameters').build(),
+            Param.numb('resistance_2700').onlyWarp1().withDescription('One of the calibration parameters').build(),
+            Param.json('resistance_880').onlyWarp1().withDescription('One of the calibration parameters').build()
         ]);
         evse.add('evse/reset_dc_fault_current_state', 'The state of the DC fault current protection module. If a DC fault occurs, charging is no longer possible until the protection module has been reset. Before resetting, it is imperative that the reason for the fault is rectified!', [
-            Param.butt('reset_dc_fault_current_state', 'normal').withDescription('Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!').actionSendCommand('evse/reset_dc_fault_current_state', 'PUT', `{ "password": "0xDC42FA23" }`).build()
+            Param.butt('reset_dc_fault_current_state', 'normal').withDescription('Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!').build()
         ]);
         evse.add('evse/manual_charging', 'Allows to start and stop a charging process, when auto start charging is disabled.', [
             Param.butt('start_charging', 'start').withDescription('Starts a charging process').actionSendCommand('evse/start_charging', 'PUT').build(),
@@ -187,13 +187,13 @@ export class WarpApiDefinitions {
             Param.json('chargers').withDescription('List of configurated wallboxes').build()
         ]);
         chargeManager.add('charge_manager/config', 'The charge manager configuration', [
-            Param.bool('enable_charge_manager').withDescription('Specifies whether the charge manager should be activated').actionUpdateConfig('charge_manager/config_update').build(),
-            Param.bool('enable_watchdog').withDescription('Specifies whether the watchdog should be activated').actionUpdateConfig('charge_manager/config_update').build(),
-            Param.bool('verbose').withDescription('Specifies whether each power distribution is to be noted in the event log').actionUpdateConfig('charge_manager/config_update').build(),
-            Param.numb('default_available_current', 'mA').withDescription('Power to be available after restarting the charge manager').actionUpdateConfig('charge_manager/config_update').build(),
-            Param.numb('maximum_available_current', 'mA').withDescription('Maximum that may be set as available current via the API and the web interface. Should be configured to the maximum permitted power of the connection of the wallbox network, which is limited e.g. by the house connection, the fuse protection or the supply line').actionUpdateConfig('charge_manager/config_update').build(),
-            Param.numb('minimum_current', 'mA').withDescription('Smallest amount of power to be allocated to a wallbox so that it starts a charging process. This can be used to influence how many wallboxes charge at the same time').actionUpdateConfig('charge_manager/config_update').build(),
-            Param.list('chargers', 'json').withDescription('List of wallboxes that are to be controlled by the charge manager').actionUpdateConfig('charge_manager/config_update').build(),
+            Param.bool('enable_charge_manager').withDescription('Specifies whether the charge manager should be activated').build(),
+            Param.bool('enable_watchdog').withDescription('Specifies whether the watchdog should be activated').build(),
+            Param.bool('verbose').withDescription('Specifies whether each power distribution is to be noted in the event log').build(),
+            Param.numb('default_available_current', 'mA').withDescription('Power to be available after restarting the charge manager').build(),
+            Param.numb('maximum_available_current', 'mA').withDescription('Maximum that may be set as available current via the API and the web interface. Should be configured to the maximum permitted power of the connection of the wallbox network, which is limited e.g. by the house connection, the fuse protection or the supply line').build(),
+            Param.numb('minimum_current', 'mA').withDescription('Smallest amount of power to be allocated to a wallbox so that it starts a charging process. This can be used to influence how many wallboxes charge at the same time').build(),
+            Param.list('chargers', 'json').withDescription('List of wallboxes that are to be controlled by the charge manager').build(),
         ]);
         return chargeManager;
     }
@@ -203,12 +203,7 @@ export class WarpApiDefinitions {
         users.add('users/config', 'User configuration', [
             Param.list('users', 'json').withDescription('Users').build(),
             Param.numb('next_user_id').withDescription('ID of the next user to be created').build(),
-            Param.bool('http_auth_enabled').withDescription('Specifies whether access data should be required to use the web interface and HTTP API').actionUpdateValue('users/http_auth_update', `{ "enabled": # }`).build()
-        ]);
-        users.add('users/edit', 'Create, update and delete users', [
-            Param.json('create').withDescription('Creates the given user').noRead().actionSendJson('users/add').build(),
-            Param.json('delete').withDescription('Deletes the user with given id').noRead().actionUpdateValue('users/remove', `{ "id": # }`).build(),
-            Param.json('update').withDescription('Updates the given user').noRead().actionSendJson('users/modify').build(),
+            Param.bool('http_auth_enabled').withDescription('Specifies whether access data should be required to use the web interface and HTTP API').build()
         ]);
         return users;
     }
@@ -276,29 +271,29 @@ export class WarpApiDefinitions {
             Param.butt('scan').withDescription('Triggers a scan for WLANs').actionSendCommand('wifi/scan', 'PUT').build()
         ]);
         wifi.add('wifi/sta_config', 'The WLAN connection configuration', [
-            Param.bool('enable_sta').withDescription('Indicates whether a WLAN connection to the configured network should be established').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.text('ssid').withDescription('SSID to which you want to connect').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.json('bssid').withDescription('BSSID to be connected to').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.bool('bssid_lock').withDescription('Defines whether only the WLAN with the set BSSID is to be connected to. Leave disabled if repeaters or similar are to be used').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.text('passphrase').withDescription('The WLAN passphrase. Maximum 63 bytes').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.text('hostname').withDescription('Host name that the wallbox should use in the configured network').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.json('ip').withDescription('IP address that the wallbox should use in the configured network').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.json('gateway').withDescription('Gateway address that the wallbox should use in the configured network').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.json('subnet').withDescription('Subnet mask that the wallbox should use in the configured network').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.json('dns').withDescription('DNS server address that the wallbox should use in the configured network').actionUpdateConfig('wifi/sta_config_update').build(),
-            Param.json('dns2').withDescription('Alternative DNS server address that the wallbox should use in the configured network').actionUpdateConfig('wifi/sta_config_update').build(),
+            Param.bool('enable_sta').withDescription('Indicates whether a WLAN connection to the configured network should be established').build(),
+            Param.text('ssid').withDescription('SSID to which you want to connect').build(),
+            Param.json('bssid').withDescription('BSSID to be connected to').build(),
+            Param.bool('bssid_lock').withDescription('Defines whether only the WLAN with the set BSSID is to be connected to. Leave disabled if repeaters or similar are to be used').build(),
+            Param.text('passphrase').withDescription('The WLAN passphrase. Maximum 63 bytes').build(),
+            Param.text('hostname').withDescription('Host name that the wallbox should use in the configured network').build(),
+            Param.json('ip').withDescription('IP address that the wallbox should use in the configured network').build(),
+            Param.json('gateway').withDescription('Gateway address that the wallbox should use in the configured network').build(),
+            Param.json('subnet').withDescription('Subnet mask that the wallbox should use in the configured network').build(),
+            Param.json('dns').withDescription('DNS server address that the wallbox should use in the configured network').build(),
+            Param.json('dns2').withDescription('Alternative DNS server address that the wallbox should use in the configured network').build(),
         ]);
         wifi.add('wifi/ap_config', 'The WLAN access point configuration', [
-            Param.bool('enable_ap').withDescription('Indicates whether the access point should be activated').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.bool('ap_fallback_only').withDescription('Specifies whether the access point should only be activated if the WLAN and LAN connections cannot be established').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.text('ssid').withDescription('SSID to which you want to connect').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.bool('hide_ssid').withDescription('True if the SSID is to be hidden, otherwise false').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.text('passphrase').withDescription('The WLAN passphrase. Maximum 63 byte').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.text('hostname').withDescription('Host name that the wallbox should use').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.numb('channel', undefined, 1, 13).withDescription('Channel on which the access point is to be accessible').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.json('ip').withDescription('IP address that the wallbox should use in the configured network').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.json('gateway').withDescription('Gateway address that the wallbox should use in the configured network').actionUpdateConfig('wifi/ap_config_update').build(),
-            Param.json('subnet').withDescription('Subnet mask that the wallbox should use in the configured network').actionUpdateConfig('wifi/ap_config_update').build(),
+            Param.bool('enable_ap').withDescription('Indicates whether the access point should be activated').build(),
+            Param.bool('ap_fallback_only').withDescription('Specifies whether the access point should only be activated if the WLAN and LAN connections cannot be established').build(),
+            Param.text('ssid').withDescription('SSID to which you want to connect').build(),
+            Param.bool('hide_ssid').withDescription('True if the SSID is to be hidden, otherwise false').build(),
+            Param.text('passphrase').withDescription('The WLAN passphrase. Maximum 63 byte').build(),
+            Param.text('hostname').withDescription('Host name that the wallbox should use').build(),
+            Param.numb('channel', undefined, 1, 13).withDescription('Channel on which the access point is to be accessible').build(),
+            Param.json('ip').withDescription('IP address that the wallbox should use in the configured network').build(),
+            Param.json('gateway').withDescription('Gateway address that the wallbox should use in the configured network').build(),
+            Param.json('subnet').withDescription('Subnet mask that the wallbox should use in the configured network').build(),
         ]);
         wifi.add('wifi/scan_results', 'The WLANs found as a result of a search triggered by wifi.scan', [
             Param.list('scan_results', 'json').withDescription('The WLANs found as a result of a search triggered by wifi.scan').build()
@@ -315,13 +310,13 @@ export class WarpApiDefinitions {
             Param.numb('link_speed', 'Mbit/s').withDescription('Negotiated connection speed').build(),
         ]);
         ethernet.add('ethernet/sta_config', 'The WLAN connection configuration', [
-            Param.bool('enable_ethernet').withDescription('Indicates whether a LAN connection to the configured network should be established').actionUpdateConfig('ethernet/config_update').build(),
-            Param.text('hostname').withDescription('Host name that the wallbox should use in the configured network').actionUpdateConfig('ethernet/config_update').build(),
-            Param.json('ip').withDescription('IP address that the wallbox should use in the configured network').actionUpdateConfig('ethernet/config_update').build(),
-            Param.json('gateway').withDescription('Gateway address that the wallbox should use in the configured network').actionUpdateConfig('ethernet/config_update').build(),
-            Param.json('subnet').withDescription('Subnet mask that the wallbox should use in the configured network').actionUpdateConfig('ethernet/config_update').build(),
-            Param.json('dns').withDescription('DNS server address that the wallbox should use in the configured network').actionUpdateConfig('ethernet/config_update').build(),
-            Param.json('dns2').withDescription('Alternative DNS server address that the wallbox should use in the configured network').actionUpdateConfig('ethernet/config_update').build(),
+            Param.bool('enable_ethernet').withDescription('Indicates whether a LAN connection to the configured network should be established').build(),
+            Param.text('hostname').withDescription('Host name that the wallbox should use in the configured network').build(),
+            Param.json('ip').withDescription('IP address that the wallbox should use in the configured network').build(),
+            Param.json('gateway').withDescription('Gateway address that the wallbox should use in the configured network').build(),
+            Param.json('subnet').withDescription('Subnet mask that the wallbox should use in the configured network').build(),
+            Param.json('dns').withDescription('DNS server address that the wallbox should use in the configured network').build(),
+            Param.json('dns2').withDescription('Alternative DNS server address that the wallbox should use in the configured network').build(),
         ]);
         return ethernet;
     }
@@ -337,7 +332,6 @@ export class WarpApiDefinitions {
             Param.text('timezone').withDescription('The time zone in which the wallbox is located').build(),
             Param.text('server').withDescription('IP address or host name of the time server to be used').build(),
             Param.text('server2').withDescription('IP address or host name of the alternative time server').build(),
-
         ]);
         return ntp;
     }
@@ -349,14 +343,14 @@ export class WarpApiDefinitions {
             Param.numb('last_error').withDescription('The last error that occurred. -1 if no error has occurred').build()
         ]);
         mqtt.add('mqtt/config', 'The MQTT configuration', [
-            Param.bool('enable_mqtt').withDescription('Indicates whether an MQTT connection to the configured broker should be established').actionUpdateConfig('mqtt/config_update').build(),
-            Param.text('broker_host').withDescription('Host name or IP address of the MQTT broker to which the wallbox is to connect').actionUpdateConfig('mqtt/config_update').build(),
-            Param.numb('broker_port').withDescription('Port of the MQTT broker to which the wallbox should connect. Typically 1883').actionUpdateConfig('mqtt/config_update').build(),
-            Param.text('broker_username').withDescription('User name with which to connect to the broker. Empty if no authentication is used').actionUpdateConfig('mqtt/config_update').build(),
-            Param.text('broker_password').withDescription('Password with which to connect to the broker. Empty if no authentication is used').actionUpdateConfig('mqtt/config_update').build(),
-            Param.text('global_topic_prefix').withDescription('Prefix that precedes all MQTT topics').actionUpdateConfig('mqtt/config_update').build(),
-            Param.text('client_name').withDescription('Name under which the wallbox registers with the broker').actionUpdateConfig('mqtt/config_update').build(),
-            Param.numb('interval', 's').withDescription('Minimum transmission interval per topic in seconds').actionUpdateConfig('mqtt/config_update').build()
+            Param.bool('enable_mqtt').withDescription('Indicates whether an MQTT connection to the configured broker should be established').build(),
+            Param.text('broker_host').withDescription('Host name or IP address of the MQTT broker to which the wallbox is to connect').build(),
+            Param.numb('broker_port').withDescription('Port of the MQTT broker to which the wallbox should connect. Typically 1883').build(),
+            Param.text('broker_username').withDescription('User name with which to connect to the broker. Empty if no authentication is used').build(),
+            Param.text('broker_password').withDescription('Password with which to connect to the broker. Empty if no authentication is used').build(),
+            Param.text('global_topic_prefix').withDescription('Prefix that precedes all MQTT topics').build(),
+            Param.text('client_name').withDescription('Name under which the wallbox registers with the broker').build(),
+            Param.numb('interval', 's').withDescription('Minimum transmission interval per topic in seconds').build()
         ]);
         return mqtt;
     }

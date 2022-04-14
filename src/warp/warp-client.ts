@@ -77,9 +77,9 @@ export class WarpClient {
     public async getMetaInformationForStartup(): Promise<WarpMetaInformation | undefined> {
         this._log.info('Retrieve meta information for adapter startup from WARP charger');
         try {
-            const versionResponse = await this.doGetRequestAsync('info/version');
-            const nameResponse = await this.doGetRequestAsync('info/name');
-            const featuresResponse = <string[]>await this.doGetRequestAsync('info/features');
+            const versionResponse = await this.doGetRequestAsync('/info/version');
+            const nameResponse = await this.doGetRequestAsync('/info/name');
+            const featuresResponse = <string[]>await this.doGetRequestAsync('/info/features');
 
             if (versionResponse?.hasOwnProperty('firmware')
                 && nameResponse?.hasOwnProperty('name')
@@ -100,7 +100,7 @@ export class WarpClient {
         }
     }
 
-    private async doGetRequestAsync(path: string,): Promise<any> {
+    private async doGetRequestAsync(path: string): Promise<any> {
         const authorizationToken = await this.getAuthorizationTokenAsync(path, 'GET');
         const headers: axios.AxiosRequestHeaders = authorizationToken ? { Accept: 'application/json', Authorization: authorizationToken } : { Accept: 'application/json' };
         const url = `${this._apiBasePath}${path}`;
