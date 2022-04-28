@@ -34,7 +34,7 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-* (pottio) fixed bug #15
+* (pottio) fixed [bug](https://github.com/pottio/ioBroker.warp/issues/15)
 
 ### 1.0.0 (2022-04-14)
 * (pottio) [Breaking Changes] Added support for WARP firmware >= 2.0.0 - older firmware versions are no longer supported
