@@ -80,7 +80,6 @@ export class WarpApiParameter {
     public type: WarpApiParameterType;
     public description: string;
     public relevantForProducts: string[];
-    //public relevantForModels: string[];
     public actionTopic?: string;
     public actionPayloadTemplate?: any;
     public actionType?: WarpApiActionType;
@@ -98,7 +97,6 @@ export class WarpApiParameter {
         this.description = '';
         this.type = type;
         this.read = true;
-        //this.relevantForModels = WarpModel.all;
         this.relevantForProducts = WarpProduct.all;
     }
 
@@ -134,25 +132,17 @@ export class WarpApiParameterBuilder {
         this._warpApiParameter.relevantForProducts = [WarpProduct.warp2];
         return this;
     }
-    // onlyModelSmart(): WarpApiParameterBuilder {
-    //     this._warpApiParameter.relevantForModels = [WarpModel.smart];
-    //     return this;
-    // }
-    // onlyModelPro(): WarpApiParameterBuilder {
-    //     this._warpApiParameter.relevantForModels = [WarpModel.pro];
-    //     return this;
-    // }
     actionUpdateValue(topic: string, payloadTemplate: any): WarpApiParameterBuilder {
         this._warpApiParameter.actionTopic = topic;
         this._warpApiParameter.actionType = 'update-value';
         this._warpApiParameter.actionPayloadTemplate = payloadTemplate;
         return this;
     }
-    actionSendCommand(topic: string, method: 'PUT' | 'GET', payloadTemplate?: any): WarpApiParameterBuilder {
+    actionSendCommand(topic: string): WarpApiParameterBuilder {
         this._warpApiParameter.actionTopic = topic;
         this._warpApiParameter.actionType = 'send-command';
-        this._warpApiParameter.actionMethod = method;
-        this._warpApiParameter.actionPayloadTemplate = payloadTemplate;
+        this._warpApiParameter.actionMethod = 'PUT';
+        this._warpApiParameter.actionPayloadTemplate = null;
         return this;
     }
     actionUpdateConfig(topic: string): WarpApiParameterBuilder {

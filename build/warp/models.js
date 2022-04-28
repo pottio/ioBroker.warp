@@ -109,11 +109,11 @@ class WarpApiParameterBuilder {
     this._warpApiParameter.actionPayloadTemplate = payloadTemplate;
     return this;
   }
-  actionSendCommand(topic, method, payloadTemplate) {
+  actionSendCommand(topic) {
     this._warpApiParameter.actionTopic = topic;
     this._warpApiParameter.actionType = "send-command";
-    this._warpApiParameter.actionMethod = method;
-    this._warpApiParameter.actionPayloadTemplate = payloadTemplate;
+    this._warpApiParameter.actionMethod = "PUT";
+    this._warpApiParameter.actionPayloadTemplate = null;
     return this;
   }
   actionUpdateConfig(topic) {

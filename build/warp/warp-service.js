@@ -95,7 +95,7 @@ class WarpService {
           resolve(JSON.parse((_a = parameter.actionPayloadTemplate) == null ? void 0 : _a.replace("#", this.toValueForPayload(state))));
           break;
         case "send-command":
-          resolve(parameter.actionPayloadTemplate ? JSON.parse(parameter.actionPayloadTemplate) : null);
+          resolve("null");
           break;
         case "update-config":
           const payloadParameters = section.parameters.filter((param) => param.actionTopic && param.actionTopic === parameter.actionTopic);
