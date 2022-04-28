@@ -1,6 +1,6 @@
 {
   "name": "iobroker.warp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Monitors and controls a wallbox (WARP charger) by Tinkerforge",
   "author": {
     "name": "pottio"

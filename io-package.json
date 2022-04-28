@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "warp",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "news": {
+            "1.0.1": {
+                "en": "fixed [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+                "de": "[Fehler] behoben (https://github.com/pottio/ioBroker.warp/issues/15)",
+                "ru": "исправлена [ошибка] (https://github.com/pottio/ioBroker.warp/issues/15)",
+                "pt": "corrigido [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+                "nl": "opgelost [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+                "fr": "[bug] corrigé (https://github.com/pottio/ioBroker.warp/issues/15)",
+                "it": "corretto [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+                "es": "corregido [error] (https://github.com/pottio/ioBroker.warp/issues/15)",
+                "pl": "naprawiony [błąd](https://github.com/pottio/ioBroker.warp/issues/15)",
+                "zh-cn": "修复 [错误](https://github.com/pottio/ioBroker.warp/issues/15)"
+            },
             "1.0.0": {
                 "en": "[Breaking Changes] Added support for WARP firmware >= 2.0.0 - older firmware versions are no longer supported\nAutomatic WARP product and model detection on startup\nSplit of array in single states is now configurable in admin settings\nDependency updates",
                 "de": "[Breaking Changes] Unterstützung für WARP-Firmware >= 2.0.0 hinzugefügt – ältere Firmware-Versionen werden nicht mehr unterstützt\nAutomatische WARP-Produkt- und Modellerkennung beim Start\nDie Aufteilung des Arrays in einzelne Zustände ist jetzt in den Admin-Einstellungen konfigurierbar\nAbhängigkeitsaktualisierungen",
