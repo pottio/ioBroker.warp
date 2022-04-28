@@ -47,7 +47,6 @@ export class WarpService {
         this._log.info('Initialized');
     }
 
-
     public async terminateAsync(): Promise<void> {
         this._log.info('Terminating');
         for (const id of this._subscribedIds) {
@@ -88,7 +87,7 @@ export class WarpService {
                     resolve(JSON.parse(parameter.actionPayloadTemplate?.replace('#', this.toValueForPayload(state))));
                     break;
                 case 'send-command':
-                    resolve(parameter.actionPayloadTemplate ? JSON.parse(parameter.actionPayloadTemplate) : null);
+                    resolve('null');
                     break;
                 case 'update-config':
                     const payloadParameters = section.parameters.filter(param => param.actionTopic && param.actionTopic === parameter.actionTopic);
@@ -292,4 +291,3 @@ export class WarpService {
         }
     }
 }
-

@@ -128,8 +128,8 @@ export class WarpApiDefinitions {
             Param.butt('reset_dc_fault_current_state', 'normal').withDescription('Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!').build()
         ]);
         evse.add('evse/manual_charging', 'Allows to start and stop a charging process, when auto start charging is disabled.', [
-            Param.butt('start_charging', 'start').withDescription('Starts a charging process').actionSendCommand('evse/start_charging', 'PUT').build(),
-            Param.butt('stop_charging', 'stop').withDescription('Stops a charging process').actionSendCommand('evse/stop_charging', 'PUT').build()
+            Param.butt('start_charging', 'start').withDescription('Starts a charging process').actionSendCommand('evse/start_charging').build(),
+            Param.butt('stop_charging', 'stop').withDescription('Stops a charging process').actionSendCommand('evse/stop_charging').build()
         ]);
         return evse;
     }
@@ -171,7 +171,7 @@ export class WarpApiDefinitions {
                 ' | Total reactive energy [kvarh]; import-export sum L1 | L2 | L3').build()
         ]);
         meter.add('meter/reset', 'Resets the energy meter', [
-            Param.butt('reset').withDescription('Resets the energy meter').actionSendCommand('meter/reset', 'PUT').build(),
+            Param.butt('reset').withDescription('Resets the energy meter').actionSendCommand('meter/reset').build(),
         ]);
         return meter;
     }
@@ -268,7 +268,7 @@ export class WarpApiDefinitions {
             Param.text('sta_bssid').withDescription('The BSSID of the remote station to which the wallbox is connected').build(),
         ]);
         wifi.add('wifi/scan', 'Triggers a scan for WLANs', [
-            Param.butt('scan').withDescription('Triggers a scan for WLANs').actionSendCommand('wifi/scan', 'PUT').build()
+            Param.butt('scan').withDescription('Triggers a scan for WLANs').actionSendCommand('wifi/scan').build()
         ]);
         wifi.add('wifi/sta_config', 'The WLAN connection configuration', [
             Param.bool('enable_sta').withDescription('Indicates whether a WLAN connection to the configured network should be established').build(),

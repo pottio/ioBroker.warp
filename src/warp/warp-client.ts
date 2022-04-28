@@ -115,7 +115,7 @@ export class WarpClient {
 
     public async sendMessageAsync(message: WarpMessage, method: 'PUT' | 'GET' = 'PUT'): Promise<void> {
         this._log.info('Send message to WARP charger');
-        this._log.silly('Message: ' + JSON.stringify(message));
+        this._log.debug('Message: ' + JSON.stringify(message));
         try {
             const path = `/${message.topic}`;
             const authorizationToken = await this.getAuthorizationTokenAsync(path, method);

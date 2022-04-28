@@ -144,8 +144,8 @@ class WarpApiDefinitions {
       import_models.Param.butt("reset_dc_fault_current_state", "normal").withDescription("Resets the DC residual current protection module. Before resetting, it is imperative that the reason for the fault is rectified!").build()
     ]);
     evse.add("evse/manual_charging", "Allows to start and stop a charging process, when auto start charging is disabled.", [
-      import_models.Param.butt("start_charging", "start").withDescription("Starts a charging process").actionSendCommand("evse/start_charging", "PUT").build(),
-      import_models.Param.butt("stop_charging", "stop").withDescription("Stops a charging process").actionSendCommand("evse/stop_charging", "PUT").build()
+      import_models.Param.butt("start_charging", "start").withDescription("Starts a charging process").actionSendCommand("evse/start_charging").build(),
+      import_models.Param.butt("stop_charging", "stop").withDescription("Stops a charging process").actionSendCommand("evse/stop_charging").build()
     ]);
     return evse;
   }
@@ -179,7 +179,7 @@ class WarpApiDefinitions {
       import_models.Param.list("all_values", "number").onlyWarp2().withDescription("Voltage [V] against neutral L1 | L2 | L3 | Power [A] L1 | L2 | L3 | Active power [W] L1 | L2 | L3 | Apparent power [VA] L1 | L2 | L3 | Reactive power [var] L1 | L2 | L3 | Power factor L1 | L2 | L3 | Relative phase shift [\xB0] L1 | L2 | L3 | Avg voltage against neutral [V] | Avg power [A] | Total phase currents [A] | Total active power [W] | Total apparent power [VA] | Total reactive power [var] | Total power factor | Total relative phase shift [\xB0] | Frequency of the supply voltage [Hz] | Active energy (import; taken from the vehicle) [kWh] | Active energy (export; delivered from the vehicle) [kWh] | Reactive energy (import; taken from the vehicle) [kvarh] | Reactive energy (export; delivered from the vehicle) [kvarh] | Total apparent energy [kVAh] | Transported electric charge [Ah] | Used active power [W] | Max. used active power [W] | Used apparent power [VA] | Max. used apparent power [VA] | Used neutral conductor power [A] | Max. used neutral conductor power [A] | Voltage L1 to L2 [V] | Voltage L2 to L3 [V] | Voltage L3 to L1 [V] | Avg voltage between phases [V] | Neutral conductor power [A] | THD of voltage [%] L1 | L2 | L3 | THD of power [%] L1 | L2 | l3 | THD of voltage [%] | THD of power [%] | Used power [A] L1 | L2 | L3 | Max. used power [A] L1 | L2 | L3 | THD voltage L1 to L2 [%] | THD voltage L2 to L3 [%] | THD voltage L3 to L1 [%] | Avg. THD voltage between phases [%] | Total active energy [kWh] | Total reactive energy [kvarh] | Active energy (import; taken from the vehicle) [kWh] L1 | L2 | L3 | Active energy (export; delivered from the vehicle) [kWh] L1 | L2 | L3 | Total active energy [kWh]; import-export sum L1 | L2 | L3 | Reactive energy (import; taken from the vehicle) [kvarh] L1 | L2 | L3 | Reactive energy (export; delivered from the vehicle) [kvarh] L1 | L2 | L3 | Total reactive energy [kvarh]; import-export sum L1 | L2 | L3").build()
     ]);
     meter.add("meter/reset", "Resets the energy meter", [
-      import_models.Param.butt("reset").withDescription("Resets the energy meter").actionSendCommand("meter/reset", "PUT").build()
+      import_models.Param.butt("reset").withDescription("Resets the energy meter").actionSendCommand("meter/reset").build()
     ]);
     return meter;
   }
@@ -270,7 +270,7 @@ class WarpApiDefinitions {
       import_models.Param.text("sta_bssid").withDescription("The BSSID of the remote station to which the wallbox is connected").build()
     ]);
     wifi.add("wifi/scan", "Triggers a scan for WLANs", [
-      import_models.Param.butt("scan").withDescription("Triggers a scan for WLANs").actionSendCommand("wifi/scan", "PUT").build()
+      import_models.Param.butt("scan").withDescription("Triggers a scan for WLANs").actionSendCommand("wifi/scan").build()
     ]);
     wifi.add("wifi/sta_config", "The WLAN connection configuration", [
       import_models.Param.bool("enable_sta").withDescription("Indicates whether a WLAN connection to the configured network should be established").build(),
