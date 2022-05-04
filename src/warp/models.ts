@@ -8,12 +8,6 @@ export abstract class WarpProduct {
     public static readonly all: string[] = [WarpProduct.warp1, WarpProduct.warp2];
 
 }
-export abstract class WarpModel {
-    public static readonly smart: string = 'smart';
-    public static readonly pro: string = 'pro';
-    public static readonly all: string[] = [WarpModel.smart, WarpModel.pro];
-}
-
 export interface WarpMessage {
     topic: string;
     payload: any;
