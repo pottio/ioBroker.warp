@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "warp",
-        "version": "1.0.1",
+        "version": "1.1.0",
         "news": {
+            "1.1.0": {
+                "en": "Dependency updates\nAPI changes (WARP firmware versions 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "de": "Abhängigkeitsaktualisierungen\nAPI-Änderungen (WARP-Firmware-Versionen 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "ru": "Обновления зависимостей\nИзменения API (версия прошивки WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "pt": "Atualizações de dependência\nAlterações de API (versões de firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "nl": "Afhankelijkheidsupdates\nAPI-wijzigingen (WARP-firmwareversies 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "fr": "Mises à jour des dépendances\nModifications de l'API (versions du micrologiciel WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "it": "Aggiornamenti delle dipendenze\nModifiche API (versioni firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "es": "actualizaciones de dependencia\nCambios en la API (versiones de firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "pl": "Aktualizacje zależności\nZmiany API (wersje oprogramowania WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+                "zh-cn": "依赖更新\nAPI 更改（WARP 固件版本 2.0.2、2.0.3、2.0.4）[[#27]](https://github.com/pottio/ioBroker.warp/issues/27)"
+            },
             "1.0.1": {
                 "en": "fixed [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
                 "de": "[Fehler] behoben (https://github.com/pottio/ioBroker.warp/issues/15)",

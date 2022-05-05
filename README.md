@@ -33,7 +33,7 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.1.0 (2022-05-05)
 * (pottio) Dependency updates
 * (pottio) API changes (WARP firmware versions 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)
 
