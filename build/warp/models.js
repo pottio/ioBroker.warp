@@ -22,7 +22,6 @@ __export(models_exports, {
   WarpApiParameter: () => WarpApiParameter,
   WarpApiParameterBuilder: () => WarpApiParameterBuilder,
   WarpApiSection: () => WarpApiSection,
-  WarpModel: () => WarpModel,
   WarpProduct: () => WarpProduct
 });
 module.exports = __toCommonJS(models_exports);
@@ -32,12 +31,6 @@ let WarpProduct = _WarpProduct;
 WarpProduct.warp1 = "warp1";
 WarpProduct.warp2 = "warp2";
 WarpProduct.all = [_WarpProduct.warp1, _WarpProduct.warp2];
-const _WarpModel = class {
-};
-let WarpModel = _WarpModel;
-WarpModel.smart = "smart";
-WarpModel.pro = "pro";
-WarpModel.all = [_WarpModel.smart, _WarpModel.pro];
 class WarpApi {
   constructor(id, description, preventCreating = false) {
     this.id = id;
@@ -178,7 +171,6 @@ class Param {
   WarpApiParameter,
   WarpApiParameterBuilder,
   WarpApiSection,
-  WarpModel,
   WarpProduct
 });
 //# sourceMappingURL=models.js.map

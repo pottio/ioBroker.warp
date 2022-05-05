@@ -33,12 +33,12 @@ export class WarpAdapter extends utils.Adapter {
 				this.config.password = await Encryption.decrypt(this, this.config.password);
 			}
 
-			const version = await this.getStateAsync('info.version');
+			const version = await this.getStateAsync('info.last_executed_adapter_version');
 			this._log.debug(`Adapter version on last adapter execution: '${version?.val}'`);
 
 			await this._warpService.initAsync(<string>(version?.val ?? '0.0.0'));
 
-			await this.setStateAsync('info.version', this.version, true);
+			await this.setStateAsync('info.last_executed_adapter_version', this.version, true);
 		} catch (e) {
 			this._log.error('Initializing failed', e)
 		}
