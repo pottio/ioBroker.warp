@@ -6,10 +6,9 @@ import { WarpApiDefinitions } from './warp-api-definitions';
 import { WarpClient } from './warp-client';
 
 export class WarpService {
-    private readonly _objectInitPeriodInSeconds = 60;
+    private readonly _objectInitPeriodInSeconds = 120;
     private readonly _adapter: WarpAdapter;
     private readonly _log: ContextLogger;
-    private readonly _subscribedIds: string[] = [];
     private readonly _client: WarpClient;
     private _apiDefinitions!: WarpApiDefinitions;
     private _startInitTimestamp!: number;
@@ -24,7 +23,6 @@ export class WarpService {
     public async initAsync(versionBeforeUpdate: string): Promise<void> {
         this._log.info('Initializing');
         try {
-            this._startInitTimestamp = Date.now();
             await this._client.initAsync();
 
             const metaInformation = await this._client.getMetaInformationForStartup();
@@ -39,6 +37,7 @@ export class WarpService {
             await this.deleteObjectsRemovedFromDefinitionsAfterAdapterUpdateAsync(versionBeforeUpdate);
             await this.initialCreateSectionsAndActionsAsync(metaInformation.product);
 
+            this._startInitTimestamp = Date.now();
             await this._client.connectAsync();
             this._client.webSocketMessageEmitter.on('message', async (message: WarpMessage) => this.handleWarpMessageAsync(message));
         } catch (e) {
@@ -49,10 +48,6 @@ export class WarpService {
 
     public async terminateAsync(): Promise<void> {
         this._log.info('Terminating');
-        for (const id of this._subscribedIds) {
-            this._log.debug(`Unsubscribe state changes '${id}'`);
-            await this._adapter.unsubscribeStatesAsync(id);
-        }
         this._client.disconnect();
         this._log.info('Terminated');
     }
@@ -282,12 +277,11 @@ export class WarpService {
         }
 
         this._log.debug(`Create or override state '${parameterId}'`);
-        await this._adapter.setObjectAsync(parameterId, obj);
+        await this._adapter.extendObjectAsync(parameterId, obj);
 
         if (parameter.hasAction()) {
             this._log.debug(`Subscribe state changes '${parameterId}'`);
             await this._adapter.subscribeStatesAsync(parameterId);
-            this._subscribedIds.push(parameterId);
         }
     }
 }

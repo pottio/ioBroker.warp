@@ -43,7 +43,6 @@ module.exports = __toCommonJS(main_exports);
 var utils = __toESM(require("@iobroker/adapter-core"));
 var import_context_logger = require("./lib/context-logger");
 var import_warp_service = require("./warp/warp-service");
-var import_crypto = require("./lib/crypto");
 class WarpAdapter extends utils.Adapter {
   constructor(options = {}) {
     super(__spreadProps(__spreadValues({}, options), {
@@ -60,10 +59,6 @@ class WarpAdapter extends utils.Adapter {
     this._log.info("Start initializing WARP adapter");
     try {
       await this.setStateAsync("info.connection", false, true);
-      if (this.config.authEnabled) {
-        this._log.debug("Auth enabled. Decrypt password");
-        this.config.password = await import_crypto.Encryption.decrypt(this, this.config.password);
-      }
       const version = await this.getStateAsync("info.last_executed_adapter_version");
       this._log.debug(`Adapter version on last adapter execution: '${version == null ? void 0 : version.val}'`);
       await this._warpService.initAsync((_a = version == null ? void 0 : version.val) != null ? _a : "0.0.0");

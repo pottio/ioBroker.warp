@@ -1,7 +1,6 @@
 import * as utils from '@iobroker/adapter-core';
 import { ContextLogger } from './lib/context-logger';
 import { WarpService } from './warp/warp-service';
-import { Encryption } from './lib/crypto';
 export class WarpAdapter extends utils.Adapter {
 	private readonly _log: ContextLogger;
 	private readonly _warpService: WarpService;
@@ -27,11 +26,6 @@ export class WarpAdapter extends utils.Adapter {
 		this._log.info('Start initializing WARP adapter');
 		try {
 			await this.setStateAsync('info.connection', false, true);
-
-			if (this.config.authEnabled) {
-				this._log.debug('Auth enabled. Decrypt password');
-				this.config.password = await Encryption.decrypt(this, this.config.password);
-			}
 
 			const version = await this.getStateAsync('info.last_executed_adapter_version');
 			this._log.debug(`Adapter version on last adapter execution: '${version?.val}'`);

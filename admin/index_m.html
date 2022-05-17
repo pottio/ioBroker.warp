@@ -17,24 +17,6 @@
 	<script type="text/javascript" src="words.js"></script>
 
 	<script type="text/javascript">
-		var secret;
-		function encrypt(key, value) {
-			var result = '';
-			for (var i = 0; i < value.length; ++i) {
-				result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-			}
-			return result;
-		}
-		function decrypt(key, value) {
-			var result = '';
-			if (value) {
-				for (var i = 0; i < value.length; ++i) {
-					result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-				}
-			}
-			return result;
-		}
-
 		function showHideUsernamePassword() {
 			if ($('#authEnabled').prop('checked') === true) {
 				$('#usernameAndPassword').show();
@@ -48,10 +30,6 @@
 				var $value = $('#' + id + '.value');
 				var $key = $(this);
 				var id = $key.attr('id');
-				if (id === 'password') {
-					let decrypted = decrypt(secret, settings[id]);
-					settings[id] = decrypted;
-				}
 				if ($key.attr('type') === 'checkbox') {
 					// do not call onChange direct, because onChange could expect some arguments
 					$key.prop('checked', settings[id]).on('change', () => {
@@ -78,10 +56,7 @@
 
 		// This will be called by the admin adapter when the settings page loads
 		function load(settings, onChange) {
-			socket.emit('getObject', 'system.config', function (err, obj) {
-				secret = (obj.native ? obj.native.secret : '') || 'Zgfr56gFe87jJOM';
-				init(settings, onChange);
-			});
+			init(settings, onChange);
 			onChange(false);
 		}
 
@@ -90,9 +65,7 @@
 			var obj = {};
 			$('.value').each(function () {
 				var $this = $(this);
-				if ($this.attr('id') === 'password') {
-					obj[$this.attr('id')] = encrypt(secret, $this.val());
-				} else if ($this.attr('type') === 'checkbox') {
+				if ($this.attr('type') === 'checkbox') {
 					obj[$this.attr('id')] = $this.prop('checked');
 				} else if ($this.attr('type') === 'number') {
 					obj[$this.attr('id')] = parseFloat($this.val());
