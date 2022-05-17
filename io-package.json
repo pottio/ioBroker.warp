@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "warp",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "news": {
+            "1.2.0": {
+                "en": "Minor improvements",
+                "de": "Kleine Verbesserungen",
+                "ru": "Незначительные улучшения",
+                "pt": "Pequenas melhorias",
+                "nl": "Kleine verbeteringen",
+                "fr": "Améliorations mineures",
+                "it": "Piccoli miglioramenti",
+                "es": "Pequeñas mejoras",
+                "pl": "Niewielkie zmiany",
+                "zh-cn": "小改进"
+            },
             "1.1.0": {
                 "en": "Dependency updates\nAPI changes (WARP firmware versions 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
                 "de": "Abhängigkeitsaktualisierungen\nAPI-Änderungen (WARP-Firmware-Versionen 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
