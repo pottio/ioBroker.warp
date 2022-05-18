@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "warp",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "news": {
+            "1.2.1": {
+                "en": "Fixed bug",
+                "de": "Fehler behoben",
+                "ru": "Исправлена ошибка",
+                "pt": "Bug corrigido",
+                "nl": "Bug opgelost",
+                "fr": "Bogue corrigé",
+                "it": "Bug risolto",
+                "es": "Error corregido",
+                "pl": "Naprawiono błąd",
+                "zh-cn": "修复错误"
+            },
             "1.2.0": {
                 "en": "Minor improvements",
                 "de": "Kleine Verbesserungen",
