@@ -150,6 +150,11 @@
         "connectionType": "local",
         "dataSource": "push",
         "materialize": true,
+        "globalDependencies": [
+            {
+                "admin": ">=4.0.9"
+            }
+        ],
         "dependencies": [
             {
                 "js-controller": ">=2.0.0"
