@@ -35,6 +35,8 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 -->
 ### **WORK IN PROGRESS**
 * (pottio) API changes
+* (pottio) Dependency updates
+
 ### 1.2.1 (2022-05-18)
 * (pottio) Fixed bug
 
