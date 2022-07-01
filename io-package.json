@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "warp",
-        "version": "1.2.1",
+        "version": "1.2.2",
         "news": {
+            "1.2.2": {
+                "en": "API changes\nDependency updates",
+                "de": "API-Änderungen\nÄnderungen der Abhängigkeit",
+                "ru": "Изменения API\nОбновление зависимости",
+                "pt": "Alterações de API\nAtualizações de dependência",
+                "nl": "API verandert\nAfhankelijke updates",
+                "fr": "Modifications de l ' API\nMises à jour des dépenses",
+                "it": "Modifiche API\nAggiornamenti di dipendenza",
+                "es": "Cambios de API\nActualizaciones de dependencia",
+                "pl": "Zmiany API\nAktualizacja",
+                "zh-cn": "A. 多样化\nB. 附属更新"
+            },
             "1.2.1": {
                 "en": "Fixed bug",
                 "de": "Fehler behoben",
