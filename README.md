@@ -33,6 +33,8 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (pottio) API changes
 ### 1.2.1 (2022-05-18)
 * (pottio) Fixed bug
 

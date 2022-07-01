@@ -170,6 +170,9 @@ export class WarpApiDefinitions {
                 ' | Active energy (export; delivered from the vehicle) [kWh] L1 | L2 | L3 | Total active energy [kWh]; import-export sum L1 | L2 | L3 | Reactive energy (import; taken from the vehicle) [kvarh] L1 | L2 | L3 | Reactive energy (export; delivered from the vehicle) [kvarh] L1 | L2 | L3' +
                 ' | Total reactive energy [kvarh]; import-export sum L1 | L2 | L3').build()
         ]);
+        meter.add('meter/last_reset', 'Unix timestamp of the time of the last counter reset', [
+            Param.numb('last_reset', 'ms').withDescription('Unix timestamp of the time of the last counter reset').build(),
+        ]);
         meter.add('meter/reset', 'Resets the energy meter', [
             Param.butt('reset').withDescription('Resets the energy meter').actionSendCommand('meter/reset').build(),
         ]);
@@ -290,7 +293,7 @@ export class WarpApiDefinitions {
             Param.bool('hide_ssid').withDescription('True if the SSID is to be hidden, otherwise false').build(),
             Param.text('passphrase').withDescription('The WLAN passphrase. Maximum 63 byte').build(),
             Param.text('hostname').withDescription('Host name that the wallbox should use').build(),
-            Param.numb('channel', undefined, 1, 13).withDescription('Channel on which the access point is to be accessible').build(),
+            Param.numb('channel', undefined, 0, 13).withDescription('Channel on which the access point is to be accessible').build(),
             Param.json('ip').withDescription('IP address that the wallbox should use in the configured network').build(),
             Param.json('gateway').withDescription('Gateway address that the wallbox should use in the configured network').build(),
             Param.json('subnet').withDescription('Subnet mask that the wallbox should use in the configured network').build(),
@@ -324,7 +327,8 @@ export class WarpApiDefinitions {
     public defineNtp(): WarpApi {
         const ntp = new WarpApi('ntp', 'Time synchronization');
         ntp.add('ntp/state', 'The state of the time synchronization', [
-            Param.bool('synced').withDescription('Indicates whether the wallbox was able to synchronise its time via NTP').build()
+            Param.bool('synced').withDescription('Indicates whether the wallbox was able to synchronise its time via NTP').build(),
+            Param.numb('time').withDescription('A Unix timestamp in minutes that indicates the current time of the wallbox, or 0 if there is no time synchronisation').build()
         ]);
         ntp.add('ntp/config', 'The NTP configuration', [
             Param.bool('enable').withDescription('Specifies whether the wallbox should synchronise its time via NTP').build(),
