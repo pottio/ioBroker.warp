@@ -168,6 +168,7 @@
         "extIcon": "https://raw.githubusercontent.com/pottio/ioBroker.warp/main/admin/warp.png",
         "readme": "https://github.com/pottio/ioBroker.warp/blob/main/README.md",
         "loglevel": "info",
+        "tier": 2,
         "mode": "daemon",
         "type": "vehicle",
         "compact": true,
