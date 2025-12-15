@@ -162,7 +162,6 @@
         ],
         "license": "MIT",
         "platform": "Javascript/Node.js",
-        "main": "build/main.js",
         "icon": "warp.png",
         "enabled": true,
         "extIcon": "https://raw.githubusercontent.com/pottio/ioBroker.warp/main/admin/warp.png",
