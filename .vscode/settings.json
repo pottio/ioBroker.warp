@@ -1,29 +1,40 @@
 {
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"eslint.enable": true,
-	"editor.formatOnSave": true,
-	"json.schemas": [
-		{
-			"fileMatch": [
-				"io-package.json"
-			],
-			"url": "https://json.schemastore.org/io-package"
-		}
-	],
-	"cSpell.words": [
-		"bricklet",
-		"bssid",
-		"configurated",
-		"evse",
-		"iobroker",
-		"kvarh",
-		"Mbit",
-		"relais",
-		"rssi",
-		"ssid",
-		"UNCONFIGURED",
-		"wallbox",
-		"wallboxes",
-		"WLAN"
-	]
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.enable": true,
+    "editor.formatOnSave": true,
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "io-package.json"
+            ],
+            "url": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json"
+        },
+        {
+            "fileMatch": [
+                "admin/jsonConfig.json",
+                "admin/jsonCustom.json",
+                "admin/jsonTab.json",
+                "admin/jsonConfig.json5",
+                "admin/jsonCustom.json5",
+                "admin/jsonTab.json5"
+            ],
+            "url": "https://raw.githubusercontent.com/ioBroker/ioBroker.admin/master/packages/jsonConfig/schemas/jsonConfig.json"
+        }
+    ],
+    "cSpell.words": [
+        "bricklet",
+        "bssid",
+        "configurated",
+        "evse",
+        "iobroker",
+        "kvarh",
+        "Mbit",
+        "relais",
+        "rssi",
+        "ssid",
+        "UNCONFIGURED",
+        "wallbox",
+        "wallboxes",
+        "WLAN"
+    ]
 }
