@@ -69,7 +69,7 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 ## License
 MIT License
 
-Copyright (c) 2022 pottio
+Copyright (c) 2022-2026 pottio
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
