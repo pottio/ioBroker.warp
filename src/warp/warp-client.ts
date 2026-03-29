@@ -1,6 +1,6 @@
 import * as axios from 'axios';
-import * as crypto from 'crypto';
-import { EventEmitter } from 'events';
+import * as crypto from 'node:crypto';
+import { EventEmitter } from 'node:events';
 import WebSocketClient from 'ws';
 import { WarpAdapter } from '../main';
 import { ContextLogger } from './../lib/context-logger';
