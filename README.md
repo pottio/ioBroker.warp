@@ -33,6 +33,10 @@ However, no individual states are sent via MQTT, but complex JSON objects. The w
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires js-controller >= 6.0.11 now.
+
 ### 1.2.2 (2022-07-01)
 * (pottio) API changes
 * (pottio) Dependency updates
