@@ -1,240 +1,242 @@
 {
-    "common": {
-        "name": "warp",
-        "version": "1.2.2",
-        "news": {
-            "1.2.2": {
-                "en": "API changes\nDependency updates",
-                "de": "API-Änderungen\nÄnderungen der Abhängigkeit",
-                "ru": "Изменения API\nОбновление зависимости",
-                "pt": "Alterações de API\nAtualizações de dependência",
-                "nl": "API verandert\nAfhankelijke updates",
-                "fr": "Modifications de l ' API\nMises à jour des dépenses",
-                "it": "Modifiche API\nAggiornamenti di dipendenza",
-                "es": "Cambios de API\nActualizaciones de dependencia",
-                "pl": "Zmiany API\nAktualizacja",
-                "zh-cn": "A. 多样化\nB. 附属更新"
-            },
-            "1.2.1": {
-                "en": "Fixed bug",
-                "de": "Fehler behoben",
-                "ru": "Исправлена ошибка",
-                "pt": "Bug corrigido",
-                "nl": "Bug opgelost",
-                "fr": "Bogue corrigé",
-                "it": "Bug risolto",
-                "es": "Error corregido",
-                "pl": "Naprawiono błąd",
-                "zh-cn": "修复错误"
-            },
-            "1.2.0": {
-                "en": "Minor improvements",
-                "de": "Kleine Verbesserungen",
-                "ru": "Незначительные улучшения",
-                "pt": "Pequenas melhorias",
-                "nl": "Kleine verbeteringen",
-                "fr": "Améliorations mineures",
-                "it": "Piccoli miglioramenti",
-                "es": "Pequeñas mejoras",
-                "pl": "Niewielkie zmiany",
-                "zh-cn": "小改进"
-            },
-            "1.1.0": {
-                "en": "Dependency updates\nAPI changes (WARP firmware versions 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "de": "Abhängigkeitsaktualisierungen\nAPI-Änderungen (WARP-Firmware-Versionen 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "ru": "Обновления зависимостей\nИзменения API (версия прошивки WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "pt": "Atualizações de dependência\nAlterações de API (versões de firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "nl": "Afhankelijkheidsupdates\nAPI-wijzigingen (WARP-firmwareversies 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "fr": "Mises à jour des dépendances\nModifications de l'API (versions du micrologiciel WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "it": "Aggiornamenti delle dipendenze\nModifiche API (versioni firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "es": "actualizaciones de dependencia\nCambios en la API (versiones de firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "pl": "Aktualizacje zależności\nZmiany API (wersje oprogramowania WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
-                "zh-cn": "依赖更新\nAPI 更改（WARP 固件版本 2.0.2、2.0.3、2.0.4）[[#27]](https://github.com/pottio/ioBroker.warp/issues/27)"
-            },
-            "1.0.1": {
-                "en": "fixed [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
-                "de": "[Fehler] behoben (https://github.com/pottio/ioBroker.warp/issues/15)",
-                "ru": "исправлена [ошибка] (https://github.com/pottio/ioBroker.warp/issues/15)",
-                "pt": "corrigido [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
-                "nl": "opgelost [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
-                "fr": "[bug] corrigé (https://github.com/pottio/ioBroker.warp/issues/15)",
-                "it": "corretto [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
-                "es": "corregido [error] (https://github.com/pottio/ioBroker.warp/issues/15)",
-                "pl": "naprawiony [błąd](https://github.com/pottio/ioBroker.warp/issues/15)",
-                "zh-cn": "修复 [错误](https://github.com/pottio/ioBroker.warp/issues/15)"
-            },
-            "1.0.0": {
-                "en": "[Breaking Changes] Added support for WARP firmware >= 2.0.0 - older firmware versions are no longer supported\nAutomatic WARP product and model detection on startup\nSplit of array in single states is now configurable in admin settings\nDependency updates",
-                "de": "[Breaking Changes] Unterstützung für WARP-Firmware >= 2.0.0 hinzugefügt – ältere Firmware-Versionen werden nicht mehr unterstützt\nAutomatische WARP-Produkt- und Modellerkennung beim Start\nDie Aufteilung des Arrays in einzelne Zustände ist jetzt in den Admin-Einstellungen konfigurierbar\nAbhängigkeitsaktualisierungen",
-                "ru": "[Ключевые изменения] Добавлена поддержка прошивки WARP >= 2.0.0 — более старые версии прошивки больше не поддерживаются.\nАвтоматическое определение продукта и модели WARP при запуске\nРазделение массива в отдельных состояниях теперь настраивается в настройках администратора.\nОбновления зависимостей",
-                "pt": "[Mudanças importantes] Adicionado suporte para firmware WARP >= 2.0.0 - versões de firmware mais antigas não são mais suportadas\nDetecção automática de produto e modelo WARP na inicialização\nA divisão da matriz em estados únicos agora é configurável nas configurações de administrador\nAtualizações de dependência",
-                "nl": "[Breaking Changes] Ondersteuning toegevoegd voor WARP-firmware >= 2.0.0 - oudere firmwareversies worden niet langer ondersteund\nAutomatische WARP-product- en modeldetectie bij opstarten\nSplitsing van array in enkele toestanden is nu configureerbaar in beheerdersinstellingen\nAfhankelijkheidsupdates",
-                "fr": "[Modifications majeures] Ajout de la prise en charge du micrologiciel WARP >= 2.0.0 - les anciennes versions de micrologiciel ne sont plus prises en charge\nDétection automatique des produits et modèles WARP au démarrage\nLa division du tableau en états uniques est maintenant configurable dans les paramètres d'administration\nMises à jour des dépendances",
-                "it": "[Breaking Changes] Aggiunto supporto per firmware WARP >= 2.0.0 - le versioni firmware precedenti non sono più supportate\nRilevamento automatico del prodotto e del modello WARP all'avvio\nLa suddivisione dell'array in singoli stati è ora configurabile nelle impostazioni dell'amministratore\nAggiornamenti delle dipendenze",
-                "es": "[Cambios importantes] Se agregó compatibilidad con el firmware WARP >= 2.0.0: las versiones de firmware anteriores ya no son compatibles\nDetección automática de productos y modelos WARP al inicio\nLa división de la matriz en estados individuales ahora se puede configurar en la configuración de administración\nactualizaciones de dependencia",
-                "pl": "[Przełomowe zmiany] Dodano obsługę oprogramowania WARP >= 2.0.0 - starsze wersje oprogramowania nie są już obsługiwane\nAutomatyczne wykrywanie produktu i modelu WARP podczas uruchamiania\nPodział tablicy na pojedyncze stany można teraz konfigurować w ustawieniach administratora\nAktualizacje zależności",
-                "zh-cn": "[重大更改] 添加了对 WARP 固件 >= 2.0.0 的支持 - 不再支持旧固件版本\n启动时自动检测 WARP 产品和型号\n现在可以在管理设置中配置单个状态的数组拆分\n依赖更新"
-            },
-            "0.0.4": {
-                "en": "fixed bug",
-                "de": "Fehler behoben",
-                "ru": "исправлена ошибка",
-                "pt": "bug corrigido",
-                "nl": "bug opgelost",
-                "fr": "bogue corrigé",
-                "it": "bug corretto",
-                "es": "error corregido",
-                "pl": "naprawiony błąd",
-                "zh-cn": "修复错误"
-            },
-            "0.0.3": {
-                "en": "fixed bugs\nadded instance link",
-                "de": "Behobene Fehler\nInstanzlink hinzugefügt",
-                "ru": "исправлены ошибки\nдобавлена ссылка на экземпляр",
-                "pt": "bugs corrigidos\nlink de instância adicionado",
-                "nl": "fouten oplossen\ninstantielink toegevoegd",
-                "fr": "bogues corrigés\nlien d'instance ajouté",
-                "it": "bug corretti\ncollegamento dell'istanza aggiunto",
-                "es": "Errores arreglados\nenlace de instancia agregado",
-                "pl": "naprawione błędy\ndodano link do instancji",
-                "zh-cn": "修复了错误\n添加了实例链接"
-            },
-            "0.0.2": {
-                "en": "fixed bug",
-                "de": "Fehler behoben",
-                "ru": "исправлена ошибка",
-                "pt": "bug corrigido",
-                "nl": "bug opgelost",
-                "fr": "bogue corrigé",
-                "it": "bug corretto",
-                "es": "error corregido",
-                "pl": "naprawiony błąd",
-                "zh-cn": "修复错误"
-            },
-            "0.0.1": {
-                "en": "initial release",
-                "de": "Erstveröffentlichung",
-                "ru": "Начальная версия",
-                "pt": "lançamento inicial",
-                "nl": "Eerste uitgave",
-                "fr": "Première version",
-                "it": "Versione iniziale",
-                "es": "Versión inicial",
-                "pl": "Pierwsze wydanie",
-                "zh-cn": "首次出版"
-            }
-        },
-        "title": "WARP charger",
-        "titleLang": {
-            "en": "WARP charger",
-            "de": "WARP charger",
-            "ru": "WARP charger",
-            "pt": "WARP charger",
-            "nl": "WARP charger",
-            "fr": "WARP charger",
-            "it": "WARP charger",
-            "es": "WARP charger",
-            "pl": "WARP charger",
-            "zh-cn": "WARP charger"
-        },
-        "desc": {
-            "en": "Monitors and controls a wallbox (WARP charger) by Tinkerforge",
-            "de": "Überwacht und steuert eine Wallbox (WARP charger) von Tinkerforge",
-            "ru": "Отслеживает и контролирует настенную коробку (WARP charger) от Tinkerforge.",
-            "pt": "Monitora e controla uma caixa de parede (WARP charger) da Tinkerforge",
-            "nl": "Bewaakt en bestuurt een wallbox (WARP charger) van Tinkerforge",
-            "fr": "Surveille et contrôle une wallbox (WARP charger) par Tinkerforge",
-            "it": "Monitora e controlla una wallbox (WARP charger) di Tinkerforge",
-            "es": "Supervisa y controla un wallbox (WARP charger) de Tinkerforge",
-            "pl": "Monitoruje i steruje wallboxem (WARP charger) firmy Tinkerforge",
-            "zh-cn": "监视和控制 Tinkerforge 的墙盒（WARP charger）"
-        },
-        "authors": [
-            "pottio"
-        ],
-        "keywords": [
-            "warp",
-            "charger",
-            "car",
-            "wallbox",
-            "e-mobility",
-            "tinkerforge"
-        ],
-        "license": "MIT",
-        "platform": "Javascript/Node.js",
-        "main": "build/main.js",
-        "icon": "warp.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/pottio/ioBroker.warp/main/admin/warp.png",
-        "readme": "https://github.com/pottio/ioBroker.warp/blob/main/README.md",
-        "loglevel": "info",
-        "mode": "daemon",
-        "type": "vehicle",
-        "compact": true,
-        "connectionType": "local",
-        "dataSource": "push",
-        "materialize": true,
-        "globalDependencies": [
-            {
-                "admin": ">=4.0.9"
-            }
-        ],
-        "dependencies": [
-            {
-                "js-controller": ">=2.0.0"
-            }
-        ]
+  "common": {
+    "name": "warp",
+    "version": "1.2.2",
+    "news": {
+      "1.2.2": {
+        "en": "API changes\nDependency updates",
+        "de": "API-Änderungen\nÄnderungen der Abhängigkeit",
+        "ru": "Изменения API\nОбновление зависимости",
+        "pt": "Alterações de API\nAtualizações de dependência",
+        "nl": "API verandert\nAfhankelijke updates",
+        "fr": "Modifications de l ' API\nMises à jour des dépenses",
+        "it": "Modifiche API\nAggiornamenti di dipendenza",
+        "es": "Cambios de API\nActualizaciones de dependencia",
+        "pl": "Zmiany API\nAktualizacja",
+        "zh-cn": "A. 多样化\nB. 附属更新"
+      },
+      "1.2.1": {
+        "en": "Fixed bug",
+        "de": "Fehler behoben",
+        "ru": "Исправлена ошибка",
+        "pt": "Bug corrigido",
+        "nl": "Bug opgelost",
+        "fr": "Bogue corrigé",
+        "it": "Bug risolto",
+        "es": "Error corregido",
+        "pl": "Naprawiono błąd",
+        "zh-cn": "修复错误"
+      },
+      "1.2.0": {
+        "en": "Minor improvements",
+        "de": "Kleine Verbesserungen",
+        "ru": "Незначительные улучшения",
+        "pt": "Pequenas melhorias",
+        "nl": "Kleine verbeteringen",
+        "fr": "Améliorations mineures",
+        "it": "Piccoli miglioramenti",
+        "es": "Pequeñas mejoras",
+        "pl": "Niewielkie zmiany",
+        "zh-cn": "小改进"
+      },
+      "1.1.0": {
+        "en": "Dependency updates\nAPI changes (WARP firmware versions 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "de": "Abhängigkeitsaktualisierungen\nAPI-Änderungen (WARP-Firmware-Versionen 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "ru": "Обновления зависимостей\nИзменения API (версия прошивки WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "pt": "Atualizações de dependência\nAlterações de API (versões de firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "nl": "Afhankelijkheidsupdates\nAPI-wijzigingen (WARP-firmwareversies 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "fr": "Mises à jour des dépendances\nModifications de l'API (versions du micrologiciel WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "it": "Aggiornamenti delle dipendenze\nModifiche API (versioni firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "es": "actualizaciones de dependencia\nCambios en la API (versiones de firmware WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "pl": "Aktualizacje zależności\nZmiany API (wersje oprogramowania WARP 2.0.2, 2.0.3, 2.0.4) [[#27]](https://github.com/pottio/ioBroker.warp/issues/27)",
+        "zh-cn": "依赖更新\nAPI 更改（WARP 固件版本 2.0.2、2.0.3、2.0.4）[[#27]](https://github.com/pottio/ioBroker.warp/issues/27)"
+      },
+      "1.0.1": {
+        "en": "fixed [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+        "de": "[Fehler] behoben (https://github.com/pottio/ioBroker.warp/issues/15)",
+        "ru": "исправлена [ошибка] (https://github.com/pottio/ioBroker.warp/issues/15)",
+        "pt": "corrigido [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+        "nl": "opgelost [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+        "fr": "[bug] corrigé (https://github.com/pottio/ioBroker.warp/issues/15)",
+        "it": "corretto [bug](https://github.com/pottio/ioBroker.warp/issues/15)",
+        "es": "corregido [error] (https://github.com/pottio/ioBroker.warp/issues/15)",
+        "pl": "naprawiony [błąd](https://github.com/pottio/ioBroker.warp/issues/15)",
+        "zh-cn": "修复 [错误](https://github.com/pottio/ioBroker.warp/issues/15)"
+      },
+      "1.0.0": {
+        "en": "[Breaking Changes] Added support for WARP firmware >= 2.0.0 - older firmware versions are no longer supported\nAutomatic WARP product and model detection on startup\nSplit of array in single states is now configurable in admin settings\nDependency updates",
+        "de": "[Breaking Changes] Unterstützung für WARP-Firmware >= 2.0.0 hinzugefügt – ältere Firmware-Versionen werden nicht mehr unterstützt\nAutomatische WARP-Produkt- und Modellerkennung beim Start\nDie Aufteilung des Arrays in einzelne Zustände ist jetzt in den Admin-Einstellungen konfigurierbar\nAbhängigkeitsaktualisierungen",
+        "ru": "[Ключевые изменения] Добавлена поддержка прошивки WARP >= 2.0.0 — более старые версии прошивки больше не поддерживаются.\nАвтоматическое определение продукта и модели WARP при запуске\nРазделение массива в отдельных состояниях теперь настраивается в настройках администратора.\nОбновления зависимостей",
+        "pt": "[Mudanças importantes] Adicionado suporte para firmware WARP >= 2.0.0 - versões de firmware mais antigas não são mais suportadas\nDetecção automática de produto e modelo WARP na inicialização\nA divisão da matriz em estados únicos agora é configurável nas configurações de administrador\nAtualizações de dependência",
+        "nl": "[Breaking Changes] Ondersteuning toegevoegd voor WARP-firmware >= 2.0.0 - oudere firmwareversies worden niet langer ondersteund\nAutomatische WARP-product- en modeldetectie bij opstarten\nSplitsing van array in enkele toestanden is nu configureerbaar in beheerdersinstellingen\nAfhankelijkheidsupdates",
+        "fr": "[Modifications majeures] Ajout de la prise en charge du micrologiciel WARP >= 2.0.0 - les anciennes versions de micrologiciel ne sont plus prises en charge\nDétection automatique des produits et modèles WARP au démarrage\nLa division du tableau en états uniques est maintenant configurable dans les paramètres d'administration\nMises à jour des dépendances",
+        "it": "[Breaking Changes] Aggiunto supporto per firmware WARP >= 2.0.0 - le versioni firmware precedenti non sono più supportate\nRilevamento automatico del prodotto e del modello WARP all'avvio\nLa suddivisione dell'array in singoli stati è ora configurabile nelle impostazioni dell'amministratore\nAggiornamenti delle dipendenze",
+        "es": "[Cambios importantes] Se agregó compatibilidad con el firmware WARP >= 2.0.0: las versiones de firmware anteriores ya no son compatibles\nDetección automática de productos y modelos WARP al inicio\nLa división de la matriz en estados individuales ahora se puede configurar en la configuración de administración\nactualizaciones de dependencia",
+        "pl": "[Przełomowe zmiany] Dodano obsługę oprogramowania WARP >= 2.0.0 - starsze wersje oprogramowania nie są już obsługiwane\nAutomatyczne wykrywanie produktu i modelu WARP podczas uruchamiania\nPodział tablicy na pojedyncze stany można teraz konfigurować w ustawieniach administratora\nAktualizacje zależności",
+        "zh-cn": "[重大更改] 添加了对 WARP 固件 >= 2.0.0 的支持 - 不再支持旧固件版本\n启动时自动检测 WARP 产品和型号\n现在可以在管理设置中配置单个状态的数组拆分\n依赖更新"
+      },
+      "0.0.4": {
+        "en": "fixed bug",
+        "de": "Fehler behoben",
+        "ru": "исправлена ошибка",
+        "pt": "bug corrigido",
+        "nl": "bug opgelost",
+        "fr": "bogue corrigé",
+        "it": "bug corretto",
+        "es": "error corregido",
+        "pl": "naprawiony błąd",
+        "zh-cn": "修复错误"
+      },
+      "0.0.3": {
+        "en": "fixed bugs\nadded instance link",
+        "de": "Behobene Fehler\nInstanzlink hinzugefügt",
+        "ru": "исправлены ошибки\nдобавлена ссылка на экземпляр",
+        "pt": "bugs corrigidos\nlink de instância adicionado",
+        "nl": "fouten oplossen\ninstantielink toegevoegd",
+        "fr": "bogues corrigés\nlien d'instance ajouté",
+        "it": "bug corretti\ncollegamento dell'istanza aggiunto",
+        "es": "Errores arreglados\nenlace de instancia agregado",
+        "pl": "naprawione błędy\ndodano link do instancji",
+        "zh-cn": "修复了错误\n添加了实例链接"
+      },
+      "0.0.2": {
+        "en": "fixed bug",
+        "de": "Fehler behoben",
+        "ru": "исправлена ошибка",
+        "pt": "bug corrigido",
+        "nl": "bug opgelost",
+        "fr": "bogue corrigé",
+        "it": "bug corretto",
+        "es": "error corregido",
+        "pl": "naprawiony błąd",
+        "zh-cn": "修复错误"
+      },
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "zh-cn": "首次出版"
+      }
     },
-    "encryptedNative": [
-        "password"
-    ],
-    "protectedNative": [
-        "password",
-        "user"
-    ],
-    "native": {
-        "authEnabled": false,
-        "ipOrHostname": "",
-        "listBreakdownEnabled": false,
-        "password": "",
-        "secureConnection": false,
-        "user": ""
+    "title": "WARP charger",
+    "titleLang": {
+      "en": "WARP charger",
+      "de": "WARP charger",
+      "ru": "WARP charger",
+      "pt": "WARP charger",
+      "nl": "WARP charger",
+      "fr": "WARP charger",
+      "it": "WARP charger",
+      "es": "WARP charger",
+      "pl": "WARP charger",
+      "zh-cn": "WARP charger"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "WARP charger connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.last_executed_adapter_version",
-            "type": "config",
-            "common": {
-                "role": "text",
-                "name": "Adapter version on last adapter execution (needed to generate objects on adapter start)",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        }
-    ]
+    "desc": {
+      "en": "Monitors and controls a wallbox (WARP charger) by Tinkerforge",
+      "de": "Überwacht und steuert eine Wallbox (WARP charger) von Tinkerforge",
+      "ru": "Отслеживает и контролирует настенную коробку (WARP charger) от Tinkerforge.",
+      "pt": "Monitora e controla uma caixa de parede (WARP charger) da Tinkerforge",
+      "nl": "Bewaakt en bestuurt een wallbox (WARP charger) van Tinkerforge",
+      "fr": "Surveille et contrôle une wallbox (WARP charger) par Tinkerforge",
+      "it": "Monitora e controlla una wallbox (WARP charger) di Tinkerforge",
+      "es": "Supervisa y controla un wallbox (WARP charger) de Tinkerforge",
+      "pl": "Monitoruje i steruje wallboxem (WARP charger) firmy Tinkerforge",
+      "zh-cn": "监视和控制 Tinkerforge 的墙盒（WARP charger）"
+    },
+    "authors": [
+      "pottio"
+    ],
+    "keywords": [
+      "warp",
+      "charger",
+      "car",
+      "wallbox",
+      "e-mobility",
+      "tinkerforge"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "build/main.js",
+    "icon": "warp.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/pottio/ioBroker.warp/main/admin/warp.png",
+    "readme": "https://github.com/pottio/ioBroker.warp/blob/main/README.md",
+    "loglevel": "info",
+    "mode": "daemon",
+    "type": "vehicle",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "globalDependencies": [
+      {
+        "admin": ">=4.0.9"
+      }
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "adminUI": {
+      "config": "materialize"
+    }
+  },
+  "encryptedNative": [
+    "password"
+  ],
+  "protectedNative": [
+    "password",
+    "user"
+  ],
+  "native": {
+    "authEnabled": false,
+    "ipOrHostname": "",
+    "listBreakdownEnabled": false,
+    "password": "",
+    "secureConnection": false,
+    "user": ""
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "WARP charger connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.last_executed_adapter_version",
+      "type": "config",
+      "common": {
+        "role": "text",
+        "name": "Adapter version on last adapter execution (needed to generate objects on adapter start)",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    }
+  ]
 }
